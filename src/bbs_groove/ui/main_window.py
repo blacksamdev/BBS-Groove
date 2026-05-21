@@ -276,7 +276,7 @@ class BBSGrooveWindow(QMainWindow):
         self._versions_panel = vp
         if not self._versions_expanded:
             vp.setFixedHeight(32)
-        top.addWidget(vp)
+        top.addWidget(vp, 0, Qt.AlignmentFlag.AlignTop)
         v.addWidget(top_w)
 
         # Titre
@@ -637,16 +637,28 @@ class BBSGrooveWindow(QMainWindow):
         idx = self._playlist.current_index
         self._list.setCurrentRow(idx)
         track = self._playlist.current_track()
-        if track:
-            self._update_track_display(track)
-            # Forcer le rechargement de l artwork
-            url = track.get('artwork_url')
-            if url:
-                import threading
-                threading.Thread(target=self._fetch_artwork, args=(url,), daemon=True).start()
-            # Re-afficher les versions si déjà fetchées
-            if self._candidates and self._current_playing_url:
-                self._signals.candidates_ready.emit(self._candidates, self._current_playing_url)
+        if not track:
+            return
+        self._update_track_display(track)
+        # Artwork
+        art_url = track.get('artwork_url')
+        if art_url:
+            import threading
+            threading.Thread(target=self._fetch_artwork, args=(art_url,), daemon=True).start()
+        # URL courante depuis la playlist
+        cur_url = self._playlist.current_url() or self._current_playing_url
+        self._current_playing_url = cur_url or ''
+        # Versions : re-afficher ou re-fetcher
+        import threading
+        if self._candidates and cur_url:
+            self._signals.candidates_ready.emit(self._candidates, cur_url)
+        elif track.get('spotify_id'):
+            self._candidates = []
+            threading.Thread(
+                target=self._fetch_candidates,
+                args=(idx, track.get('spotify_id', ''), cur_url or ''),
+                daemon=True,
+            ).start()
         self._lbl_status.setText('Retour mode normal')
 
     def _enrich_track(self, index: int):
@@ -691,8 +703,12 @@ class BBSGrooveWindow(QMainWindow):
             item.setData(Qt.ItemDataRole.UserRole, c['url'])
             item.setToolTip(full_title)
             if c['url'] == current_url:
+                from PyQt6.QtGui import QBrush, QFont
                 item.setForeground(QColor(ACCENT))
-                item.setBackground(QColor('#0d2a0d'))
+                item.setBackground(QBrush(QColor('#0f2f0f')))
+                f = item.font()
+                f.setBold(True)
+                item.setFont(f)
             self._versions_list.addItem(item)
 
     def _on_version_clicked(self, item: QListWidgetItem):
