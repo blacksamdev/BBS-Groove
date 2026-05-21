@@ -40,6 +40,7 @@ class MPVPlayer:
         self._lock           = threading.Lock()
         self._monitor_thread: threading.Thread | None = None
         self.on_track_ended: Callable | None = None
+        self._volume: int = 100
 
     # ------------------------------------------------------------------ #
     #  Contrôles publics                                                   #
@@ -70,6 +71,8 @@ class MPVPlayer:
 
         self._started = True
         log('mpv socket OK — lecture démarrée', 'debug')
+        if self._volume != 100:
+            self.set_volume(self._volume)
         self._monitor_thread = threading.Thread(target=self._monitor, daemon=True)
         self._monitor_thread.start()
 
@@ -85,7 +88,9 @@ class MPVPlayer:
     def get_duration(self) -> float:  return self._get('duration') or 0.0
     def get_paused(self) -> bool:     return self._get('pause') or False
     def seek(self, seconds: float):   self._cmd('seek', seconds, 'absolute')
-    def set_volume(self, vol: int):   self._cmd('set_property', 'volume', max(0, min(100, vol)))
+    def set_volume(self, vol: int):
+        self._volume = max(0, min(100, vol))
+        self._cmd('set_property', 'volume', self._volume)
 
     def is_running(self) -> bool:
         return (self.process is not None
