@@ -27,8 +27,8 @@ class Resolver:
         title    = track.get('title', '')
         duration = track.get('duration_ms', 0) / 1000  # en secondes
 
-        # Requête enrichie : "official audio" améliore la pertinence
-        query = f"ytsearch5:{artist} - {title} official audio"
+        
+        query = f"ytsearch5:{artist} - {title}"
 
         try:
             with yt_dlp.YoutubeDL(self._YDL_OPTS) as ydl:
