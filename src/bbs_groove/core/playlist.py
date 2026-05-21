@@ -2,6 +2,7 @@ import random
 import threading
 from typing import Callable
 from bbs_groove.core.resolver import Resolver
+from bbs_groove.core.pref_store import PrefStore
 from bbs_groove.config.settings import PREFETCH_COUNT
 
 
@@ -15,6 +16,7 @@ class Playlist:
         self.shuffle:    bool = False
         self.repeat:     bool = False
         self._resolver   = Resolver()
+        self._pref_store = PrefStore()
         self._lock       = threading.Lock()
         self._stop_event = threading.Event()
         self._worker:    threading.Thread | None = None
@@ -132,7 +134,10 @@ class Playlist:
                 track = self._tracks[idx] if idx < len(self._tracks) else None
             if not track:
                 continue
-            url = self._resolver.resolve(track)
+            # Préférence utilisateur en priorité
+            sid = track.get('spotify_id', '')
+            saved = self._pref_store.get(sid) if sid else None
+            url = saved if saved else self._resolver.resolve(track)
             if self._stop_event.is_set():
                 return
             with self._lock:
