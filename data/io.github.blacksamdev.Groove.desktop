@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=BBS grOOve
+Comment=Lecteur audio léger — BBS Suite
+Exec=bbs-groove
+Icon=io.github.blacksamdev.Groove
+Terminal=false
+Type=Application
+Categories=AudioVideo;Audio;Player;Qt;
+Keywords=music;spotify;audio;player;bbs;
+StartupNotify=true

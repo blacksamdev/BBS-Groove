@@ -1,0 +1,57 @@
+{
+  "app-id": "io.github.blacksamdev.Groove",
+  "runtime": "org.kde.Platform",
+  "runtime-version": "6.9",
+  "sdk": "org.kde.Sdk",
+  "command": "bbs-groove",
+  "finish-args": [
+    "--share=network",
+    "--share=ipc",
+    "--socket=wayland",
+    "--socket=fallback-x11",
+    "--socket=pulseaudio",
+    "--device=dri",
+    "--filesystem=xdg-config/bbs-groove:create",
+    "--filesystem=xdg-cache/bbs-groove:create",
+    "--talk-name=org.freedesktop.Flatpak",
+    "--talk-name=org.mpris.MediaPlayer2.*",
+    "--own-name=org.mpris.MediaPlayer2.bbs-groove",
+    "--filesystem=~/.var/app/io.mpv.Mpv:create"
+  ],
+  "modules": [
+    "python3-pyqt6.json",
+    "python-deps.json",
+    {
+      "name": "groove",
+      "buildsystem": "simple",
+      "build-commands": [
+        "install -Dm755 wrapper.sh /app/bin/bbs-groove",
+        "mkdir -p /app/lib/bbs-groove/src/bbs_groove/core/sources",
+        "mkdir -p /app/lib/bbs-groove/src/bbs_groove/ui",
+        "mkdir -p /app/lib/bbs-groove/src/bbs_groove/config",
+        "install -Dm644 src/bbs_groove/__init__.py          /app/lib/bbs-groove/src/bbs_groove/__init__.py",
+        "install -Dm644 src/bbs_groove/groove.py            /app/lib/bbs-groove/src/bbs_groove/groove.py",
+        "install -Dm644 src/bbs_groove/logging_utils.py /app/lib/bbs-groove/src/bbs_groove/logging_utils.py",
+        "install -Dm644 src/bbs_groove/core/__init__.py     /app/lib/bbs-groove/src/bbs_groove/core/__init__.py",
+        "install -Dm644 src/bbs_groove/core/player.py       /app/lib/bbs-groove/src/bbs_groove/core/player.py",
+        "install -Dm644 src/bbs_groove/core/playlist.py     /app/lib/bbs-groove/src/bbs_groove/core/playlist.py",
+        "install -Dm644 src/bbs_groove/core/resolver.py     /app/lib/bbs-groove/src/bbs_groove/core/resolver.py",
+        "install -Dm644 src/bbs_groove/core/sources/__init__.py  /app/lib/bbs-groove/src/bbs_groove/core/sources/__init__.py",
+        "install -Dm644 src/bbs_groove/core/sources/spotify.py   /app/lib/bbs-groove/src/bbs_groove/core/sources/spotify.py",
+        "install -Dm644 src/bbs_groove/ui/__init__.py       /app/lib/bbs-groove/src/bbs_groove/ui/__init__.py",
+        "install -Dm644 src/bbs_groove/ui/main_window.py    /app/lib/bbs-groove/src/bbs_groove/ui/main_window.py",
+        "install -Dm644 src/bbs_groove/ui/tray.py           /app/lib/bbs-groove/src/bbs_groove/ui/tray.py",
+        "install -Dm644 src/bbs_groove/config/__init__.py   /app/lib/bbs-groove/src/bbs_groove/config/__init__.py",
+        "install -Dm644 src/bbs_groove/config/settings.py   /app/lib/bbs-groove/src/bbs_groove/config/settings.py",
+        "install -Dm644 data/io.github.blacksamdev.Groove.desktop /app/share/applications/io.github.blacksamdev.Groove.desktop",
+        "install -Dm644 data/io.github.blacksamdev.Groove.svg /app/share/icons/hicolor/scalable/apps/io.github.blacksamdev.Groove.svg"
+      ],
+      "sources": [
+        {
+          "type": "dir",
+          "path": "."
+        }
+      ]
+    }
+  ]
+}

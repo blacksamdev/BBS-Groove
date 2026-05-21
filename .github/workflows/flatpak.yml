@@ -1,0 +1,133 @@
+name: Flatpak Build & Deploy
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  APP_ID: io.github.blacksamdev.Groove
+  REPO_TITLE: BBS grOOve
+  REPO_URL: https://blacksamdev.github.io/BBS-Groove/
+  REPO_HOMEPAGE: https://github.com/blacksamdev/BBS-Groove
+  REPO_DESCRIPTION: BBS grOOve - Lecteur audio leger BBS Suite
+  REPO_ICON: https://raw.githubusercontent.com/blacksamdev/BBS-Groove/main/data/io.github.blacksamdev.Groove.svg
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Install dependencies
+        run: |
+          set -e
+          sudo apt-get update
+          sudo apt-get install -y flatpak flatpak-builder gnupg rsync python3-pip
+
+      - name: Setup Flathub
+        run: |
+          set -e
+          flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+      - name: Install SDK
+        run: |
+          set -e
+          flatpak install --user -y flathub org.kde.Sdk//6.9
+          flatpak install --user -y flathub org.kde.Platform//6.9
+
+      - name: Download PyQt6 wheels
+        run: |
+          set -e
+          mkdir -p pyqt6-wheels
+          pip3 download --no-deps --only-binary=:all: -d pyqt6-wheels/ PyQt6 PyQt6-Qt6 PyQt6-sip
+          ls pyqt6-wheels/
+          python3 scripts/gen_pyqt6.py
+
+      - name: Generate Python deps
+        run: |
+          set -e
+          pip3 install flatpak-pip-generator
+          python3 -m flatpak_pip_generator --runtime org.kde.Sdk//6.9 pybind11 spotifyscraper yt-dlp python-dotenv requests -o python-deps
+          python3 scripts/patch_deps.py
+
+      - name: Import GPG key
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${GPG_PRIVATE_KEY:-}" ]; then
+            echo "ERROR: GPG_PRIVATE_KEY missing"
+            exit 1
+          fi
+          mkdir -p ~/.gnupg && chmod 700 ~/.gnupg
+          printf 'pinentry-mode loopback\n' > ~/.gnupg/gpg.conf
+          printf 'allow-loopback-pinentry\n' > ~/.gnupg/gpg-agent.conf
+          echo "$GPG_PRIVATE_KEY" | gpg --batch --yes --pinentry-mode loopback --import
+          KEYID=$(gpg --list-secret-keys --with-colons | awk -F: '/^fpr:/ {print $10; exit}')
+          [ -z "$KEYID" ] && echo "ERROR: KEYID not found" && exit 1
+          echo "$KEYID" > KEYID.txt
+          gpg --armor --export "$KEYID" > repo-signing.key
+
+      - name: Build Flatpak
+        run: |
+          set -euo pipefail
+          KEYID=$(cat KEYID.txt)
+          flatpak-builder --user --repo=repo --gpg-sign="$KEYID" --force-clean build-dir io.github.blacksamdev.Groove.json
+
+      - name: Sign and update repo
+        run: |
+          set -euo pipefail
+          KEYID=$(cat KEYID.txt)
+          flatpak build-update-repo repo --generate-static-deltas --gpg-sign="$KEYID"
+          test -f repo/summary.sig || (echo "ERROR: summary.sig missing" && exit 1)
+
+      - name: Generate flatpakrepo
+        run: |
+          set -euo pipefail
+          KEYID=$(cat KEYID.txt)
+          GPG_KEY_BASE64=$(gpg --batch --yes --export "$KEYID" | base64 -w0)
+          printf '[Flatpak Repo]\nTitle=%s\nUrl=%s\nHomepage=%s\nDescription=%s\nIcon=%s\nGPGKey=%s\n' \
+            "$REPO_TITLE" "$REPO_URL" "$REPO_HOMEPAGE" "$REPO_DESCRIPTION" "$REPO_ICON" "$GPG_KEY_BASE64" \
+            > bbs-groove.flatpakrepo
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: flatpak-repo
+          path: |
+            repo
+            repo-signing.key
+            bbs-groove.flatpakrepo
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Download artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: flatpak-repo
+          path: repo_bundle
+
+      - name: Deploy to GitHub Pages
+        run: |
+          set -e
+          mkdir -p pages
+          touch pages/.nojekyll
+          cp -r repo_bundle/repo/* pages/
+          cp repo_bundle/repo-signing.key pages/ || true
+          cp repo_bundle/bbs-groove.flatpakrepo pages/ || true
+          cd pages
+          git init
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git checkout -b gh-pages
+          git add .
+          git commit -m "Update Flatpak repo"
+          git push --force https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} gh-pages
