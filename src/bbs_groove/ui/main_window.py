@@ -651,12 +651,10 @@ class BBSGrooveWindow(QMainWindow):
         # URL courante depuis la playlist
         cur_url = self._playlist.current_url() or self._current_playing_url
         self._current_playing_url = cur_url or ''
-        # Versions : re-afficher ou re-fetcher
+        # Toujours re-fetcher les versions au retour du gaming mode
         import threading
-        if self._candidates and cur_url:
-            self._signals.candidates_ready.emit(self._candidates, cur_url)
-        elif track.get('spotify_id'):
-            self._candidates = []
+        self._candidates = []
+        if track.get('spotify_id'):
             threading.Thread(
                 target=self._fetch_candidates,
                 args=(idx, track.get('spotify_id', ''), cur_url or ''),
