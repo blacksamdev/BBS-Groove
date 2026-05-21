@@ -119,6 +119,8 @@ class SpotifySource:
 
         year = release_date[:4] if release_date else ''
 
+        uri = track.get('uri', '')
+        sid = track.get('id', '') or (uri.split(':')[2] if uri.count(':') == 2 else '')
         return {
             'title':        track.get('name', track.get('title', '')),
             'artist':       artist,
@@ -126,7 +128,7 @@ class SpotifySource:
             'album':        album_name,
             'artwork_url':  artwork,
             'duration_ms':  track.get('duration_ms', track.get('duration', 0)),
-            'spotify_id':   track.get('id', ''),
+            'spotify_id':   sid,
             'year':         year,
             'release_date': release_date,
             'is_explicit':  track.get('is_explicit', False),
