@@ -102,10 +102,14 @@ class MPVPlayer:
     # ------------------------------------------------------------------ #
 
     def _monitor(self):
-        if self.process:
-            self.process.wait()
-        # Ne déclencher on_track_ended QUE si c'est une fin naturelle
-        if not self._stopped and self._started and not self._transitioning and self.on_track_ended:
+        process = self.process  # capturer la référence au démarrage
+        if process:
+            process.wait()
+        # Ne déclencher que si c'est le process actif (pas un ancien monitor)
+        if (not self._stopped and self._started
+                and not self._transitioning
+                and process is self.process
+                and self.on_track_ended):
             self.on_track_ended()
 
     def _stop_process(self):
