@@ -99,6 +99,8 @@ class BBSGrooveWindow(QMainWindow):
         self._source: SpotifySource | None = None
         self._playing  = False
 
+        self._pref_store         = PrefStore()
+        self._versions_expanded  = self._pref_store.get_ui_state("versions_expanded", True)
         self._connect_signals()
         self._build_ui()
         self._setup_timers()
