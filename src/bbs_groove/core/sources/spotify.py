@@ -42,8 +42,9 @@ class SpotifySource:
                 for key in ('artwork_url', 'album', 'year', 'release_date', 'all_artists'):
                     if enriched.get(key):
                         track[key] = enriched[key]
-        except Exception:
-            pass
+        except Exception as e:
+            print(f'[enrich_track] ERROR: {e}', flush=True)
+        print(f'[enrich_track] result: album={track.get("album")!r} year={track.get("year")!r} artwork={bool(track.get("artwork_url"))}', flush=True)
         return track
 
     def close(self):
