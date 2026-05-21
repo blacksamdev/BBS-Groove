@@ -205,7 +205,7 @@ class BBSGrooveWindow(QMainWindow):
         # Ligne haute : artwork + versions
         top = QHBoxLayout()
         top.setSpacing(12)
-        top.setAlignment(Qt.AlignmentFlag.AlignTop)
+        top.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
 
         # Artwork
         self._artwork = QLabel()
@@ -221,6 +221,8 @@ class BBSGrooveWindow(QMainWindow):
         vp = QFrame()
         vp.setStyleSheet(f'background: {BG_ITEM}; border-radius: 6px;')
         vp.setFixedWidth(220)
+        vp.setSizePolicy(__import__('PyQt6.QtWidgets', fromlist=['QSizePolicy']).QSizePolicy.Policy.Fixed,
+                         __import__('PyQt6.QtWidgets', fromlist=['QSizePolicy']).QSizePolicy.Policy.Minimum)
         vpl = QVBoxLayout(vp)
         vpl.setContentsMargins(6, 6, 6, 6)
         vpl.setSpacing(4)
@@ -548,6 +550,7 @@ class BBSGrooveWindow(QMainWindow):
         self._lbl_status.setText('Lecture')
 
     def _update_track_display(self, track: dict):
+        self._versions_list.clear()
         self._lbl_title.setText(track.get('title', ''))
         self._lbl_artist.setText(track.get('all_artists') or track.get('artist', ''))
 
@@ -665,8 +668,10 @@ class BBSGrooveWindow(QMainWindow):
             if len(channel) > 22:
                 channel = channel[:20] + '…'
             check = '✓ ' if c['url'] == current_url else '   '
+            full_title = c.get('title', '')
             item = QListWidgetItem(f"{check}{channel}  {dur_str}")
             item.setData(Qt.ItemDataRole.UserRole, c['url'])
+            item.setToolTip(full_title)
             if c['url'] == current_url:
                 item.setForeground(QColor(ACCENT))
             self._versions_list.addItem(item)
