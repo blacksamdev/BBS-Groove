@@ -81,7 +81,7 @@ class SpotifySource:
             track = self._client.get_track_info(url)
             return [self._format_track(track, full=True)] if track else []
         artwork      = self._extract_artwork(album)
-        release_date = album.get('release_date', '')
+        release_date = album.get('release_date', '') or track.get('release_date', '')
         year         = release_date[:4] if release_date else ''
         tracks = []
         for t in album.get('tracks', []):
@@ -109,7 +109,7 @@ class SpotifySource:
         elif album:
             album_name   = album.get('name', '')
             artwork      = self._extract_artwork(album)
-            release_date = album.get('release_date', '')
+            release_date = album.get('release_date', '') or track.get('release_date', '')
         else:
             album_name   = ''
             artwork      = None
