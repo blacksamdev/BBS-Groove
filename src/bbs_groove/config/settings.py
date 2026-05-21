@@ -24,5 +24,5 @@ MPV_ARGS = [
     f'--input-ipc-server={MPV_SOCKET}',
 ]
 
-PREFETCH_COUNT = 2
+PREFETCH_COUNT = 3
 SYNC_INTERVAL  = 300
