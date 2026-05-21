@@ -504,6 +504,8 @@ class BBSGrooveWindow(QMainWindow):
 
     def _on_list_dclick(self, item: QListWidgetItem):
         idx = self._list.row(item)
+        self._player.stop()
+        self._playing = False
         track = self._playlist.go_to(idx)
         if track:
             self._update_track_display(track)
