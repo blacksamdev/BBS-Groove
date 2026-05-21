@@ -202,10 +202,15 @@ class BBSGrooveWindow(QMainWindow):
         v.setSpacing(8)
         v.setAlignment(Qt.AlignmentFlag.AlignTop)
 
-        # Ligne haute : artwork + versions
-        top = QHBoxLayout()
+        # Ligne haute : artwork + versions — hauteur fixe 220px
+        top_w = QWidget()
+        top_w.setFixedHeight(220)
+        top_w.setStyleSheet('background: transparent;')
+        top_w.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        top = QHBoxLayout(top_w)
+        top.setContentsMargins(0, 0, 0, 0)
         top.setSpacing(12)
-        top.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        top.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
 
         # Artwork
         self._artwork = QLabel()
@@ -272,7 +277,7 @@ class BBSGrooveWindow(QMainWindow):
         if not self._versions_expanded:
             vp.setFixedHeight(32)
         top.addWidget(vp)
-        v.addLayout(top)
+        v.addWidget(top_w)
 
         # Titre
         self._lbl_title = QLabel('—')
@@ -639,6 +644,9 @@ class BBSGrooveWindow(QMainWindow):
             if url:
                 import threading
                 threading.Thread(target=self._fetch_artwork, args=(url,), daemon=True).start()
+            # Re-afficher les versions si déjà fetchées
+            if self._candidates and self._current_playing_url:
+                self._signals.candidates_ready.emit(self._candidates, self._current_playing_url)
         self._lbl_status.setText('Retour mode normal')
 
     def _enrich_track(self, index: int):
@@ -684,6 +692,7 @@ class BBSGrooveWindow(QMainWindow):
             item.setToolTip(full_title)
             if c['url'] == current_url:
                 item.setForeground(QColor(ACCENT))
+                item.setBackground(QColor('#0d2a0d'))
             self._versions_list.addItem(item)
 
     def _on_version_clicked(self, item: QListWidgetItem):
@@ -728,6 +737,7 @@ class BBSGrooveWindow(QMainWindow):
             from bbs_groove.core.resolver import Resolver
             candidates = Resolver().resolve_candidates(track)
             if candidates and index == self._playlist.current_index:
+                self._candidates = candidates
                 self._signals.candidates_ready.emit(candidates, current_url)
         except Exception as e:
             print(f'[fetch_candidates] {e}')
