@@ -642,9 +642,12 @@ class BBSGrooveWindow(QMainWindow):
         self._update_track_display(track)
         # Artwork
         art_url = track.get('artwork_url')
+        import threading
         if art_url:
-            import threading
             threading.Thread(target=self._fetch_artwork, args=(art_url,), daemon=True).start()
+        elif track.get('spotify_id'):
+            # Track pas encore enrichi (changement en gaming mode) — enrichir maintenant
+            threading.Thread(target=self._enrich_track, args=(idx,), daemon=True).start()
         # URL courante depuis la playlist
         cur_url = self._playlist.current_url() or self._current_playing_url
         self._current_playing_url = cur_url or ''
@@ -754,7 +757,13 @@ class BBSGrooveWindow(QMainWindow):
             candidates = Resolver().resolve_candidates(track)
             if candidates and index == self._playlist.current_index:
                 self._candidates = candidates
-                self._signals.candidates_ready.emit(candidates, current_url)
+                # Si l URL courante ne matche aucun candidat,
+                # le premier EST ce qui joue (même algo durée)
+                if not any(c['url'] == current_url for c in candidates):
+                    effective_url = candidates[0]['url']
+                else:
+                    effective_url = current_url
+                self._signals.candidates_ready.emit(candidates, effective_url)
         except Exception as e:
             print(f'[fetch_candidates] {e}')
 
