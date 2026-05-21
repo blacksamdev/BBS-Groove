@@ -550,9 +550,16 @@ class BBSGrooveWindow(QMainWindow):
 
     def _on_return_from_gaming(self):
         self.show()
+        idx = self._playlist.current_index
+        self._list.setCurrentRow(idx)
         track = self._playlist.current_track()
         if track:
             self._update_track_display(track)
+            # Forcer le rechargement de l artwork
+            url = track.get('artwork_url')
+            if url:
+                import threading
+                threading.Thread(target=self._fetch_artwork, args=(url,), daemon=True).start()
         self._lbl_status.setText('Retour mode normal')
 
     def _enrich_track(self, index: int):
