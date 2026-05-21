@@ -3,66 +3,75 @@ import yt_dlp
 
 class Resolver:
     """Résout un dict track (titre + artiste) en URL audio YouTube.
-    
-    Stratégie :
-    - Cherche 5 résultats
-    - Score chaque résultat par proximité de durée avec Spotify
-    - Prend le plus proche si écart < 15%, sinon le premier résultat
+
+    resolve()            → URL directe (meilleur match durée)
+    resolve_candidates() → liste des 5 résultats avec métadonnées
     """
 
     _YDL_OPTS = {
-        'format':      'bestaudio/best',
-        'quiet':       True,
-        'no_warnings': True,
-        'noplaylist':  True,
+        'format':       'bestaudio/best',
+        'quiet':        True,
+        'no_warnings':  True,
+        'noplaylist':   True,
         'extract_flat': False,
     }
 
-    # Seuil d'acceptation : 15% d'écart max avec la durée Spotify
-    _DURATION_THRESHOLD = 0.15
+    _DURATION_THRESHOLD = 0.15  # 15% d'écart max
 
     def resolve(self, track: dict) -> str | None:
-        """Retourne l'URL audio directe ou None si échec."""
+        """Retourne l'URL du meilleur candidat selon la durée Spotify."""
+        candidates = self.resolve_candidates(track)
+        if not candidates:
+            return None
+        # Prend le premier (déjà trié par score durée)
+        return candidates[0]['url']
+
+    def resolve_candidates(self, track: dict) -> list[dict]:
+        """Retourne jusqu'à 5 candidats triés par proximité de durée.
+
+        Chaque candidat : {url, title, channel, duration_s, score}
+        Le premier est le meilleur match.
+        """
         artist   = track.get('artist', '')
         title    = track.get('title', '')
-        duration = track.get('duration_ms', 0) / 1000  # en secondes
+        duration = track.get('duration_ms', 0) / 1000
 
-        
         query = f"ytsearch5:{artist} - {title}"
 
         try:
             with yt_dlp.YoutubeDL(self._YDL_OPTS) as ydl:
                 info = ydl.extract_info(query, download=False)
                 if not info:
-                    return None
+                    return []
 
                 entries = info.get('entries') or [info]
-                if not entries:
-                    return None
+                candidates = []
 
-                # Scorer par proximité de durée si on connaît la durée Spotify
-                best_entry = entries[0]
-                if duration > 0:
-                    best_score = float('inf')
-                    for entry in entries:
-                        if not entry:
-                            continue
-                        yt_dur = entry.get('duration') or 0
-                        if yt_dur > 0:
-                            score = abs(yt_dur - duration) / duration
-                            if score < best_score:
-                                best_score = score
-                                best_entry = entry
+                for entry in entries:
+                    if not entry:
+                        continue
+                    url = self._extract_url(entry)
+                    if not url:
+                        continue
+                    yt_dur = entry.get('duration') or 0
+                    score  = (abs(yt_dur - duration) / duration
+                              if duration > 0 and yt_dur > 0 else 1.0)
+                    candidates.append({
+                        'url':        url,
+                        'title':      entry.get('title', ''),
+                        'channel':    entry.get('channel') or entry.get('uploader', ''),
+                        'duration_s': yt_dur,
+                        'score':      score,
+                    })
 
-                    # Si aucun résultat dans le seuil, on garde quand même le meilleur
-                    # (on joue toujours quelque chose)
-
-                return self._extract_url(best_entry)
+                # Trier par score (plus proche = meilleur)
+                candidates.sort(key=lambda c: c['score'])
+                return candidates
 
         except Exception as e:
             print(f"[Resolver] {title} : {e}")
 
-        return None
+        return []
 
     @staticmethod
     def _extract_url(entry: dict) -> str | None:
