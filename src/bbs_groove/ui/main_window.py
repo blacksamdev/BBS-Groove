@@ -268,6 +268,9 @@ class BBSGrooveWindow(QMainWindow):
         self._versions_list.itemClicked.connect(self._on_version_clicked)
         vpl.addWidget(self._versions_list)
 
+        self._versions_panel = vp
+        if not self._versions_expanded:
+            vp.setFixedHeight(32)
         top.addWidget(vp)
         v.addLayout(top)
 
@@ -655,6 +658,11 @@ class BBSGrooveWindow(QMainWindow):
         self._versions_expanded = not self._versions_expanded
         self._versions_list.setVisible(self._versions_expanded)
         self._btn_versions.setText('▼' if self._versions_expanded else '▶')
+        if self._versions_expanded:
+            self._versions_panel.setMaximumHeight(16777215)
+            self._versions_panel.setMinimumHeight(0)
+        else:
+            self._versions_panel.setFixedHeight(32)
         self._pref_store.save_ui_state('versions_expanded', self._versions_expanded)
 
     def _update_versions_list(self, candidates: list, current_url: str):
