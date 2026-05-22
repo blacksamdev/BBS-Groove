@@ -353,7 +353,7 @@ class BBSGrooveWindow(QMainWindow):
         self._btn_sleep   = self._ctrl_btn('💤')
 
         for b in (self._btn_shuffle, self._btn_prev, self._btn_play,
-                  self._btn_next, self._btn_repeat):
+                  self._btn_next, self._btn_repeat, self._btn_sleep):
             ctrl.addWidget(b)
 
         ctrl.addStretch()
