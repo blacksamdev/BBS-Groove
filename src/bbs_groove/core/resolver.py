@@ -15,6 +15,18 @@ class Resolver:
         'noplaylist':   True,
         'extract_flat': False,
     }
+    _YDL_FLAT = {
+        'quiet':        True,
+        'no_warnings':  True,
+        'noplaylist':   True,
+        'extract_flat': True,
+    }
+    _YDL_FLAT = {
+        'quiet':        True,
+        'no_warnings':  True,
+        'noplaylist':   True,
+        'extract_flat': True,
+    }
 
     _DURATION_THRESHOLD = 0.15  # 15% d'écart max
 
@@ -39,7 +51,7 @@ class Resolver:
         query = f"ytsearch5:{artist} - {title}"
 
         try:
-            with yt_dlp.YoutubeDL(self._YDL_OPTS) as ydl:
+            with yt_dlp.YoutubeDL(self._YDL_FLAT) as ydl:
                 info = ydl.extract_info(query, download=False)
                 if not info:
                     return []

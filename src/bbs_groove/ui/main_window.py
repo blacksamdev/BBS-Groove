@@ -727,14 +727,20 @@ class BBSGrooveWindow(QMainWindow):
             print(f'[pref] saved OK', flush=True)
         else:
             print(f'[pref] ERROR: no spotify_id!', flush=True)
-        # Mettre à jour l URL résolue dans la playlist
-        idx = self._playlist.current_index
-        with self._playlist._lock:
-            self._playlist._resolved[idx] = url
-        # Rejouer immédiatement
-        self._current_playing_url = url
-        self._player.on_track_ended = self._signals.track_ended.emit
-        self._player.play(url)
+        # Résoudre le stream frais depuis la webpage_url
+        import threading
+        def _resolve_and_play(yt_url):
+            from bbs_groove.core.resolver import Resolver
+            stream = Resolver().resolve_from_url(yt_url) if 'youtube' in yt_url else yt_url
+            if not stream:
+                return
+            idx = self._playlist.current_index
+            with self._playlist._lock:
+                self._playlist._resolved[idx] = stream
+            self._current_playing_url = stream
+            self._player.on_track_ended = self._signals.track_ended.emit
+            self._player.play(stream)
+        threading.Thread(target=_resolve_and_play, args=(url,), daemon=True).start()
         self._btn_play.setText('⏸')
         # Mettre à jour le ✓ dans la liste
         self._update_versions_check(url)
