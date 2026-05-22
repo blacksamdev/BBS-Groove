@@ -59,3 +59,4 @@ class PrefStore:
             with open(path, 'w') as f:
                 json.dump(data, f, indent=2)
         except Exception as e:
+            pass

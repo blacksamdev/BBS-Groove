@@ -41,6 +41,7 @@ class SpotifySource:
                     if enriched.get(key):
                         track[key] = enriched[key]
         except Exception as e:
+            pass
         return track
 
     def close(self):
