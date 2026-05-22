@@ -27,7 +27,7 @@ class _Signals(QObject):
     track_ended      = pyqtSignal()
     track_enriched   = pyqtSignal(dict)
     candidates_ready = pyqtSignal(list, str)
-    lyrics_ready     = pyqtSignal(str)
+    lyrics_ready     = pyqtSignal(str, list)
 
 
 # ── Styles ───────────────────────────────────────────────────────────── #
@@ -109,6 +109,8 @@ class BBSGrooveWindow(QMainWindow):
         self._sleep_remaining.setInterval(1000)
         self._sleep_remaining.timeout.connect(self._update_sleep_btn)
         self._sleep_secs         = 0
+        self._lyrics_synced: list  = []
+        self._lyrics_line: int     = -1
         self._connect_signals()
         self._build_ui()
         self._setup_timers()
@@ -592,6 +594,8 @@ class BBSGrooveWindow(QMainWindow):
         self._versions_list.clear()
         self._lyrics_widget.clear()
         self._lyrics_widget.setVisible(False)
+        self._lyrics_synced = []
+        self._lyrics_line   = -1
         self._lbl_title.setText(track.get('title', ''))
         self._lbl_artist.setText(track.get('all_artists') or track.get('artist', ''))
 
@@ -639,6 +643,43 @@ class BBSGrooveWindow(QMainWindow):
             self._slider.setValue(int(pos / dur * 1000))
         self._lbl_time.setText(self._fmt(pos))
         self._lbl_duration.setText(self._fmt(dur))
+        if self._lyrics_synced and pos > 0:
+            self._sync_lyrics_line(pos)
+
+    def _sync_lyrics_line(self, pos: float):
+        """Surligne la ligne courante dans les synced lyrics."""
+        synced = self._lyrics_synced
+        # Trouver l'index de la ligne courante
+        idx = 0
+        for i, (t, _) in enumerate(synced):
+            if t <= pos:
+                idx = i
+            else:
+                break
+        if idx == self._lyrics_line:
+            return  # Pas de changement
+        self._lyrics_line = idx
+        # Surligner la ligne courante via QTextCursor
+        from PyQt6.QtGui import QTextCharFormat, QColor, QTextCursor
+        doc = self._lyrics_widget.document()
+        # Reset toutes les lignes
+        cursor = QTextCursor(doc)
+        cursor.select(QTextCursor.SelectionType.Document)
+        fmt_reset = QTextCharFormat()
+        fmt_reset.setForeground(QColor('#888888'))
+        cursor.setCharFormat(fmt_reset)
+        # Surligner la ligne courante
+        block = doc.findBlockByLineNumber(idx)
+        if block.isValid():
+            cursor = QTextCursor(block)
+            cursor.select(QTextCursor.SelectionType.LineUnderCursor)
+            fmt_cur = QTextCharFormat()
+            fmt_cur.setForeground(QColor('#33cc66'))
+            fmt_cur.setFontWeight(700)
+            cursor.setCharFormat(fmt_cur)
+            # Scroller pour voir la ligne
+            self._lyrics_widget.setTextCursor(cursor)
+            self._lyrics_widget.ensureCursorVisible()
 
     @staticmethod
     def _fmt(seconds: float) -> str:
@@ -860,21 +901,31 @@ class BBSGrooveWindow(QMainWindow):
         dur_ms = track.get('duration_ms', 0)
         try:
             result = LyricsFetcher().fetch(artist, title, dur_ms)
-            text = ''
+            text   = ''
+            synced = []
             if result:
-                if result.get('plain'):
-                    text = result['plain']
-            self._signals.lyrics_ready.emit(text)
+                text   = result.get('plain', '') or ''
+                synced = result.get('synced', []) or []
+            self._signals.lyrics_ready.emit(text, synced)
         except Exception as e:
             log(f'fetch_lyrics: {e}', 'warning')
-            self._signals.lyrics_ready.emit('')
+            self._signals.lyrics_ready.emit('', [])
 
-    def _on_lyrics_ready(self, text: str):
+    def _on_lyrics_ready(self, text: str, synced: list):
         """Affiche les lyrics dans le widget."""
-        if text:
+        self._lyrics_synced = synced
+        self._lyrics_line   = -1
+        if synced:
+            # Afficher les synced lyrics comme texte plain pour départ
+            lines = [line for _, line in synced if line]
+            self._lyrics_widget.setPlainText('\n'.join(lines))
+            self._lyrics_widget.setVisible(True)
+        elif text:
+            self._lyrics_synced = []
             self._lyrics_widget.setPlainText(text)
             self._lyrics_widget.setVisible(True)
         else:
+            self._lyrics_synced = []
             self._lyrics_widget.clear()
             self._lyrics_widget.setVisible(False)
 
