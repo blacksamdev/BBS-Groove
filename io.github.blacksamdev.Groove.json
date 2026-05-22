@@ -37,6 +37,7 @@
         "install -Dm644 src/bbs_groove/core/playlist.py     /app/lib/bbs-groove/src/bbs_groove/core/playlist.py",
         "install -Dm644 src/bbs_groove/core/resolver.py     /app/lib/bbs-groove/src/bbs_groove/core/resolver.py",
         "install -Dm644 src/bbs_groove/core/pref_store.py /app/lib/bbs-groove/src/bbs_groove/core/pref_store.py",
+        "install -Dm644 src/bbs_groove/core/lyrics_fetcher.py /app/lib/bbs-groove/src/bbs_groove/core/lyrics_fetcher.py",
         "install -Dm644 src/bbs_groove/core/sources/__init__.py  /app/lib/bbs-groove/src/bbs_groove/core/sources/__init__.py",
         "install -Dm644 src/bbs_groove/core/sources/spotify.py   /app/lib/bbs-groove/src/bbs_groove/core/sources/spotify.py",
         "install -Dm644 src/bbs_groove/ui/__init__.py       /app/lib/bbs-groove/src/bbs_groove/ui/__init__.py",

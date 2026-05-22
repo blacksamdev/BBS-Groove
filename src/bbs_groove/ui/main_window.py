@@ -27,6 +27,7 @@ class _Signals(QObject):
     track_ended      = pyqtSignal()
     track_enriched   = pyqtSignal(dict)
     candidates_ready = pyqtSignal(list, str)
+    lyrics_ready     = pyqtSignal(str)
 
 
 # ── Styles ───────────────────────────────────────────────────────────── #
@@ -438,6 +439,7 @@ class BBSGrooveWindow(QMainWindow):
         self._signals.tracks_loaded.connect(self._on_tracks_loaded)
         self._signals.track_enriched.connect(self._update_track_display)
         self._signals.candidates_ready.connect(self._update_versions_list)
+        self._signals.lyrics_ready.connect(self._on_lyrics_ready)
         self._signals.resolved.connect(self._on_resolved)
         self._signals.artwork_ready.connect(self._on_artwork)
         self._signals.error.connect(self._on_error)
@@ -578,6 +580,11 @@ class BBSGrooveWindow(QMainWindow):
                 args=(self._playlist.current_index, self._current_spotify_id, url),
                 daemon=True,
             ).start()
+            _t2.Thread(
+                target=self._fetch_lyrics,
+                args=(dict(track),),
+                daemon=True,
+            ).start()
         self._btn_play.setText('⏸')
         idx = self._playlist.current_index
         self._list.setCurrentRow(idx)
@@ -585,6 +592,8 @@ class BBSGrooveWindow(QMainWindow):
 
     def _update_track_display(self, track: dict):
         self._versions_list.clear()
+        self._lyrics_widget.clear()
+        self._lyrics_widget.setVisible(False)
         self._lbl_title.setText(track.get('title', ''))
         self._lbl_artist.setText(track.get('all_artists') or track.get('artist', ''))
 
@@ -818,7 +827,7 @@ class BBSGrooveWindow(QMainWindow):
         if nxt == 0:
             self._sleep_timer.stop()
             self._sleep_remaining.stop()
-            self._btn_sleep.setFixedWidth(40)
+            self._btn_sleep.setFixedWidth(70)
             self._btn_sleep.setText('⏱ Timer')
             self._btn_sleep.setStyleSheet(self._btn_sleep.styleSheet().replace(
                 f'border-color: {ACCENT}', 'border-color: #333'))
@@ -838,12 +847,38 @@ class BBSGrooveWindow(QMainWindow):
 
     def _on_sleep_timer(self):
         self._sleep_remaining.stop()
-        self._btn_sleep.setFixedWidth(40)
+        self._btn_sleep.setFixedWidth(70)
         self._btn_sleep.setText('⏱ Timer')
         self._player.stop()
         self._playing = False
         self._btn_play.setText('▶')
         self._lbl_status.setText('Sleep timer — lecture terminée')
+
+    def _fetch_lyrics(self, track: dict):
+        """Fetch les lyrics en arrière-plan."""
+        from bbs_groove.core.lyrics_fetcher import LyricsFetcher
+        artist = track.get('artist', '')
+        title  = track.get('title', '')
+        dur_ms = track.get('duration_ms', 0)
+        try:
+            result = LyricsFetcher().fetch(artist, title, dur_ms)
+            text = ''
+            if result:
+                if result.get('plain'):
+                    text = result['plain']
+            self._signals.lyrics_ready.emit(text)
+        except Exception as e:
+            log(f'fetch_lyrics: {e}', 'warning')
+            self._signals.lyrics_ready.emit('')
+
+    def _on_lyrics_ready(self, text: str):
+        """Affiche les lyrics dans le widget."""
+        if text:
+            self._lyrics_widget.setPlainText(text)
+            self._lyrics_widget.setVisible(True)
+        else:
+            self._lyrics_widget.clear()
+            self._lyrics_widget.setVisible(False)
 
     def _on_volume(self, value: int):
         self._player.set_volume(value)
