@@ -716,9 +716,13 @@ class BBSGrooveWindow(QMainWindow):
         url = item.data(Qt.ItemDataRole.UserRole)
         if not url or url == self._current_playing_url:
             return
+        print(f'[pref] sid={self._current_spotify_id!r} url={url[:40]!r}', flush=True)
         # Sauvegarder la préférence
         if self._current_spotify_id:
             self._pref_store.save(self._current_spotify_id, url)
+            print(f'[pref] saved OK', flush=True)
+        else:
+            print(f'[pref] ERROR: no spotify_id!', flush=True)
         # Mettre à jour l URL résolue dans la playlist
         idx = self._playlist.current_index
         with self._playlist._lock:
