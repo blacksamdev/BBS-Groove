@@ -350,7 +350,7 @@ class BBSGrooveWindow(QMainWindow):
         self._btn_play    = self._ctrl_btn('▶', size=20)
         self._btn_next    = self._ctrl_btn('▶▶')
         self._btn_repeat  = self._ctrl_btn('↺', checkable=True)
-        self._btn_sleep   = self._ctrl_btn('💤')
+        self._btn_sleep   = self._ctrl_btn('⏱ Timer')
 
         for b in (self._btn_shuffle, self._btn_prev, self._btn_play,
                   self._btn_next, self._btn_repeat, self._btn_sleep):
@@ -809,13 +809,15 @@ class BBSGrooveWindow(QMainWindow):
         if nxt == 0:
             self._sleep_timer.stop()
             self._sleep_remaining.stop()
-            self._btn_sleep.setText('💤')
+            self._btn_sleep.setFixedWidth(40)
+            self._btn_sleep.setText('⏱ Timer')
             self._btn_sleep.setStyleSheet(self._btn_sleep.styleSheet().replace(
                 f'border-color: {ACCENT}', 'border-color: #333'))
         else:
             self._sleep_secs = nxt * 60
             self._sleep_timer.start(self._sleep_secs * 1000)
             self._sleep_remaining.start()
+            self._btn_sleep.setFixedWidth(72)
             self._update_sleep_btn()
 
     def _update_sleep_btn(self):
@@ -823,11 +825,12 @@ class BBSGrooveWindow(QMainWindow):
         if remaining <= 0:
             return
         mins, secs = divmod(remaining, 60)
-        self._btn_sleep.setText(f'💤{mins}:{secs:02d}')
+        self._btn_sleep.setText(f'⏱ {mins}:{secs:02d}')
 
     def _on_sleep_timer(self):
         self._sleep_remaining.stop()
-        self._btn_sleep.setText('💤')
+        self._btn_sleep.setFixedWidth(40)
+        self._btn_sleep.setText('⏱ Timer')
         self._player.stop()
         self._playing = False
         self._btn_play.setText('▶')
