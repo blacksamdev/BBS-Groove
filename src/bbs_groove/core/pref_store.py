@@ -53,8 +53,10 @@ class PrefStore:
 
     @staticmethod
     def _write(path: Path, data: dict):
+        print(f'[PrefStore] writing {path} parent_exists={path.parent.exists()} parent_writable={path.parent.is_dir()}', flush=True)
         try:
             with open(path, 'w') as f:
                 json.dump(data, f, indent=2)
+            print(f'[PrefStore] write OK', flush=True)
         except Exception as e:
-            print(f'[PrefStore] write error: {e}')
+            print(f'[PrefStore] write error: {type(e).__name__}: {e}', flush=True)
