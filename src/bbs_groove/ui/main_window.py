@@ -448,6 +448,7 @@ class BBSGrooveWindow(QMainWindow):
             else:
                 self._signals.error.emit('Aucun titre trouvé.')
         except Exception as e:
+            log(f"fetch_candidates: {e}", "warning")
             self._signals.error.emit(str(e))
 
     # ------------------------------------------------------------------ #
@@ -781,6 +782,7 @@ class BBSGrooveWindow(QMainWindow):
                     effective_url = candidates[0]['url']
                 self._signals.candidates_ready.emit(candidates, effective_url)
         except Exception as e:
+            log(f"fetch_candidates: {e}", "warning")
 
     def _on_volume(self, value: int):
         self._player.set_volume(value)
