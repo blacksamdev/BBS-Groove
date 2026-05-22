@@ -328,7 +328,7 @@ class BBSGrooveWindow(QMainWindow):
         from PyQt6.QtWidgets import QTextEdit
         self._lyrics_widget = QTextEdit()
         self._lyrics_widget.setReadOnly(True)
-        self._lyrics_widget.setMaximumHeight(180)
+        self._lyrics_widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self._lyrics_widget.setStyleSheet(f"""
             QTextEdit {{
                 background: {BG_ITEM};
@@ -341,9 +341,7 @@ class BBSGrooveWindow(QMainWindow):
         """)
         self._lyrics_widget.setPlaceholderText('Paroles non disponibles')
         self._lyrics_widget.setVisible(False)
-        v.addWidget(self._lyrics_widget)
-
-        v.addStretch()
+        v.addWidget(self._lyrics_widget, 1)
         return w
 
     def _player_bar(self) -> QWidget:
