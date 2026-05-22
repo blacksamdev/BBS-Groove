@@ -137,7 +137,14 @@ class Playlist:
             # Préférence utilisateur en priorité
             sid = track.get('spotify_id', '')
             saved = self._pref_store.get(sid) if sid else None
-            url = saved if saved else self._resolver.resolve(track)
+            if saved:
+                # Si c'est une URL YouTube pérenne → ré-résoudre en streaming frais
+                if 'youtube.com' in saved or 'youtu.be' in saved:
+                    url = self._resolver.resolve_from_url(saved) or self._resolver.resolve(track)
+                else:
+                    url = saved  # URL streaming directe (anciens formats)
+            else:
+                url = self._resolver.resolve(track)
             if self._stop_event.is_set():
                 return
             with self._lock:

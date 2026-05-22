@@ -716,10 +716,14 @@ class BBSGrooveWindow(QMainWindow):
         url = item.data(Qt.ItemDataRole.UserRole)
         if not url or url == self._current_playing_url:
             return
-        print(f'[pref] sid={self._current_spotify_id!r} url={url[:40]!r}', flush=True)
-        # Sauvegarder la préférence
+        # Trouver l'URL YouTube pérenne dans les candidats
+        pref_url = next(
+            (c.get('webpage_url', '') for c in self._candidates if c.get('url') == url),
+            ''
+        ) or url
+        print(f'[pref] sid={self._current_spotify_id!r} pref_url={pref_url[:50]!r}', flush=True)
         if self._current_spotify_id:
-            self._pref_store.save(self._current_spotify_id, url)
+            self._pref_store.save(self._current_spotify_id, pref_url)
             print(f'[pref] saved OK', flush=True)
         else:
             print(f'[pref] ERROR: no spotify_id!', flush=True)

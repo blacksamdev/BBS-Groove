@@ -57,11 +57,12 @@ class Resolver:
                     score  = (abs(yt_dur - duration) / duration
                               if duration > 0 and yt_dur > 0 else 1.0)
                     candidates.append({
-                        'url':        url,
-                        'title':      entry.get('title', ''),
-                        'channel':    entry.get('channel') or entry.get('uploader', ''),
-                        'duration_s': yt_dur,
-                        'score':      score,
+                        'url':         url,
+                        'webpage_url': entry.get('webpage_url', ''),
+                        'title':       entry.get('title', ''),
+                        'channel':     entry.get('channel') or entry.get('uploader', ''),
+                        'duration_s':  yt_dur,
+                        'score':       score,
                     })
 
                 # Trier par score (plus proche = meilleur)
@@ -72,6 +73,17 @@ class Resolver:
             print(f"[Resolver] {title} : {e}")
 
         return []
+
+    def resolve_from_url(self, yt_url: str) -> str | None:
+        """Résout une URL YouTube (pérenne) en URL streaming fraîche."""
+        try:
+            with yt_dlp.YoutubeDL(self._YDL_OPTS) as ydl:
+                info = ydl.extract_info(yt_url, download=False)
+                if info:
+                    return self._extract_url(info)
+        except Exception as e:
+            print(f"[Resolver] resolve_from_url: {e}")
+        return None
 
     @staticmethod
     def _extract_url(entry: dict) -> str | None:
