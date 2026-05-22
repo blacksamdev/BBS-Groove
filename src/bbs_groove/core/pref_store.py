@@ -8,7 +8,9 @@ class PrefStore:
     """Associe un spotify_id à une URL YouTube préférée + état UI persistant."""
 
     def __init__(self):
-        config_dir = Path(os.environ.get('XDG_CONFIG_HOME', Path.home() / '.config')) / 'bbs-groove'
+        # Utiliser ~/.config/bbs-groove/ (chemin réel exposé via --filesystem=xdg-config/bbs-groove:create)
+        # XDG_CONFIG_HOME dans Flatpak pointe vers le namespace interne non visible depuis l'hôte
+        config_dir = Path.home() / '.config' / 'bbs-groove'
         config_dir.mkdir(parents=True, exist_ok=True)
         self._prefs_path = config_dir / 'track_prefs.json'
         self._ui_path    = config_dir / 'ui_state.json'
