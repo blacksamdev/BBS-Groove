@@ -1,3 +1,4 @@
+from bbs_groove.logging_utils import log
 import yt_dlp
 
 
@@ -82,7 +83,7 @@ class Resolver:
                 return candidates
 
         except Exception as e:
-            print(f"[Resolver] {title} : {e}")
+            log(f"Resolver: {title} : {e}", "warning")
 
         return []
 
@@ -94,7 +95,7 @@ class Resolver:
                 if info:
                     return self._extract_url(info)
         except Exception as e:
-            print(f"[Resolver] resolve_from_url: {e}")
+            log(f"Resolver.resolve_from_url: {e}", "warning")
         return None
 
     @staticmethod

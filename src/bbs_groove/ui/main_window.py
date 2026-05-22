@@ -664,7 +664,6 @@ class BBSGrooveWindow(QMainWindow):
 
     def _enrich_track(self, index: int):
         """Enrichit les métadonnées d un track en arrière-plan."""
-        print(f'[enrich] index={index} source={self._source is not None}', flush=True)
         if self._source is None:
             return
         tracks = self._playlist.tracks
@@ -721,12 +720,9 @@ class BBSGrooveWindow(QMainWindow):
             (c.get('webpage_url', '') for c in self._candidates if c.get('url') == url),
             ''
         ) or url
-        print(f'[pref] sid={self._current_spotify_id!r} pref_url={pref_url[:50]!r}', flush=True)
         if self._current_spotify_id:
             self._pref_store.save(self._current_spotify_id, pref_url)
-            print(f'[pref] saved OK', flush=True)
         else:
-            print(f'[pref] ERROR: no spotify_id!', flush=True)
         # Résoudre le stream frais depuis la webpage_url
         import threading
         click_idx = self._playlist.current_index
@@ -784,7 +780,6 @@ class BBSGrooveWindow(QMainWindow):
                     effective_url = candidates[0]['url']
                 self._signals.candidates_ready.emit(candidates, effective_url)
         except Exception as e:
-            print(f'[fetch_candidates] {e}')
 
     def _on_volume(self, value: int):
         self._player.set_volume(value)

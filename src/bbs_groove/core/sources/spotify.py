@@ -29,9 +29,7 @@ class SpotifySource:
         """Récupère les infos complètes d'un track (artwork, album, année).
         Appelé en arrière-plan quand le titre commence à jouer."""
         sid = track.get('spotify_id', '')
-        print(f'[enrich_track] sid={sid!r} title={track.get("title")!r}', flush=True)
         if not sid:
-            print('[enrich_track] no spotify_id, skip', flush=True)
             return track
         try:
             url = f'https://open.spotify.com/track/{sid}'
@@ -43,8 +41,6 @@ class SpotifySource:
                     if enriched.get(key):
                         track[key] = enriched[key]
         except Exception as e:
-            print(f'[enrich_track] ERROR: {e}', flush=True)
-        print(f'[enrich_track] result: album={track.get("album")!r} year={track.get("year")!r} artwork={bool(track.get("artwork_url"))}', flush=True)
         return track
 
     def close(self):
