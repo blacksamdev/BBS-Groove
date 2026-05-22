@@ -101,6 +101,13 @@ class BBSGrooveWindow(QMainWindow):
 
         self._pref_store         = PrefStore()
         self._versions_expanded  = self._pref_store.get_ui_state("versions_expanded", True)
+        self._sleep_timer        = QTimer()
+        self._sleep_timer.setSingleShot(True)
+        self._sleep_timer.timeout.connect(self._on_sleep_timer)
+        self._sleep_remaining    = QTimer()
+        self._sleep_remaining.setInterval(1000)
+        self._sleep_remaining.timeout.connect(self._update_sleep_btn)
+        self._sleep_secs         = 0
         self._connect_signals()
         self._build_ui()
         self._setup_timers()
@@ -390,6 +397,7 @@ class BBSGrooveWindow(QMainWindow):
         self._btn_prev.clicked.connect(self._on_prev)
         self._btn_shuffle.toggled.connect(self._on_shuffle)
         self._btn_repeat.toggled.connect(self._on_repeat)
+        self._btn_sleep.clicked.connect(self._on_sleep_click)
         return w
 
     def _ctrl_btn(self, label: str, size: int = 14,
@@ -783,6 +791,46 @@ class BBSGrooveWindow(QMainWindow):
                 self._signals.candidates_ready.emit(candidates, effective_url)
         except Exception as e:
             log(f"fetch_candidates: {e}", "warning")
+
+    def _on_sleep_click(self):
+        """Cycle : off → 15 → 30 → 45 → 60 → off."""
+        options = [0, 15, 30, 45, 60]
+        if self._sleep_timer.isActive():
+            current = self._sleep_secs // 60
+            try:
+                idx = options.index(current)
+            except ValueError:
+                idx = 0
+            nxt = options[(idx + 1) % len(options)]
+        else:
+            nxt = options[1]  # 15 min par défaut
+
+        if nxt == 0:
+            self._sleep_timer.stop()
+            self._sleep_remaining.stop()
+            self._btn_sleep.setText('💤')
+            self._btn_sleep.setStyleSheet(self._btn_sleep.styleSheet().replace(
+                f'border-color: {ACCENT}', 'border-color: #333'))
+        else:
+            self._sleep_secs = nxt * 60
+            self._sleep_timer.start(self._sleep_secs * 1000)
+            self._sleep_remaining.start()
+            self._update_sleep_btn()
+
+    def _update_sleep_btn(self):
+        remaining = self._sleep_timer.remainingTime() // 1000
+        if remaining <= 0:
+            return
+        mins, secs = divmod(remaining, 60)
+        self._btn_sleep.setText(f'💤{mins}:{secs:02d}')
+
+    def _on_sleep_timer(self):
+        self._sleep_remaining.stop()
+        self._btn_sleep.setText('💤')
+        self._player.stop()
+        self._playing = False
+        self._btn_play.setText('▶')
+        self._lbl_status.setText('Sleep timer — lecture terminée')
 
     def _on_volume(self, value: int):
         self._player.set_volume(value)
