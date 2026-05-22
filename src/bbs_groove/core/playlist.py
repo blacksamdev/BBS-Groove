@@ -142,7 +142,8 @@ class Playlist:
                 if 'youtube.com' in saved or 'youtu.be' in saved:
                     url = self._resolver.resolve_from_url(saved) or self._resolver.resolve(track)
                 else:
-                    url = saved  # URL streaming directe (anciens formats)
+                    # URL streaming ou format inconnu → re-résoudre normalement
+                    url = self._resolver.resolve(track)
             else:
                 url = self._resolver.resolve(track)
             if self._stop_event.is_set():
