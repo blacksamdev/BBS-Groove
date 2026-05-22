@@ -723,6 +723,7 @@ class BBSGrooveWindow(QMainWindow):
         if self._current_spotify_id:
             self._pref_store.save(self._current_spotify_id, pref_url)
         else:
+            pass
         # Résoudre le stream frais depuis la webpage_url
         import threading
         click_idx = self._playlist.current_index
