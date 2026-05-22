@@ -774,12 +774,14 @@ class BBSGrooveWindow(QMainWindow):
             candidates = Resolver().resolve_candidates(track)
             if candidates and index == self._playlist.current_index:
                 self._candidates = candidates
-                # Si l URL courante ne matche aucun candidat,
-                # le premier EST ce qui joue (même algo durée)
-                if not any(c['url'] == current_url for c in candidates):
-                    effective_url = candidates[0]['url']
-                else:
+                # Chercher la préférence sauvegardée (YouTube URL) dans les candidats
+                saved_yt = self._pref_store.get(spotify_id) if spotify_id else None
+                if saved_yt and any(c['url'] == saved_yt for c in candidates):
+                    effective_url = saved_yt
+                elif any(c['url'] == current_url for c in candidates):
                     effective_url = current_url
+                else:
+                    effective_url = candidates[0]['url']
                 self._signals.candidates_ready.emit(candidates, effective_url)
         except Exception as e:
             print(f'[fetch_candidates] {e}')
