@@ -343,6 +343,7 @@ class BBSGrooveWindow(QMainWindow):
         """)
         self._lyrics_widget.setPlaceholderText('Paroles non disponibles')
         self._lyrics_widget.setVisible(False)
+        self._lyrics_widget.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         v.addWidget(self._lyrics_widget, 1)
         return w
 
@@ -481,6 +482,9 @@ class BBSGrooveWindow(QMainWindow):
     # ------------------------------------------------------------------ #
 
     def _on_tracks_loaded(self, tracks: list):
+        if not tracks:
+            self._lbl_status.setText('Aucun titre — URLs artiste non supportées, utilisez une playlist ou un album')
+            return
         self._playlist.load(tracks)
         self._list.clear()
         for i, t in enumerate(tracks):
