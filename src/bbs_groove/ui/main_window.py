@@ -438,7 +438,7 @@ class BBSGrooveWindow(QMainWindow):
 
     def _connect_signals(self):
         self._signals.tracks_loaded.connect(self._on_tracks_loaded)
-        self._signals.track_enriched.connect(self._update_track_display)
+        self._signals.track_enriched.connect(lambda t: self._update_track_display(t, clear_versions=False))
         self._signals.candidates_ready.connect(self._update_versions_list)
         self._signals.lyrics_ready.connect(self._on_lyrics_ready)
         self._signals.resolved.connect(self._on_resolved)
@@ -594,12 +594,13 @@ class BBSGrooveWindow(QMainWindow):
         self._list.setCurrentRow(idx)
         self._lbl_status.setText('Lecture')
 
-    def _update_track_display(self, track: dict):
-        self._versions_list.clear()
-        self._lyrics_widget.clear()
-        self._lyrics_widget.setVisible(False)
-        self._lyrics_synced = []
-        self._lyrics_line   = -1
+    def _update_track_display(self, track: dict, clear_versions: bool = True):
+        if clear_versions:
+            self._versions_list.clear()
+            self._lyrics_widget.clear()
+            self._lyrics_widget.setVisible(False)
+            self._lyrics_synced = []
+            self._lyrics_line   = -1
         self._lbl_title.setText(track.get('title', ''))
         self._lbl_artist.setText(track.get('all_artists') or track.get('artist', ''))
 
