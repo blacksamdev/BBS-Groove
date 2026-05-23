@@ -647,9 +647,8 @@ class BBSGrooveWindow(QMainWindow):
             self._sync_lyrics_line(pos)
 
     def _sync_lyrics_line(self, pos: float):
-        """Surligne la ligne courante dans les synced lyrics."""
+        """Surligne la ligne courante — rebuild HTML à chaque changement."""
         synced = self._lyrics_synced
-        # Trouver l'index de la ligne courante
         idx = 0
         for i, (t, _) in enumerate(synced):
             if t <= pos:
@@ -657,27 +656,24 @@ class BBSGrooveWindow(QMainWindow):
             else:
                 break
         if idx == self._lyrics_line:
-            return  # Pas de changement
+            return
         self._lyrics_line = idx
-        # Surligner la ligne courante via QTextCursor
-        from PyQt6.QtGui import QTextCharFormat, QColor, QTextCursor
-        doc = self._lyrics_widget.document()
-        # Reset toutes les lignes
-        cursor = QTextCursor(doc)
-        cursor.select(QTextCursor.SelectionType.Document)
-        fmt_reset = QTextCharFormat()
-        fmt_reset.setForeground(QColor('#888888'))
-        cursor.setCharFormat(fmt_reset)
-        # Surligner la ligne courante
-        block = doc.findBlockByLineNumber(idx)
+        parts = ['<html><body style="background:transparent;margin:0;padding:4px;">']
+        for i, (_, line) in enumerate(synced):
+            if not line:
+                parts.append('<p style="margin:1px 0;">&nbsp;</p>')
+            elif i == idx:
+                parts.append(f'<p style="color:#ffffff;font-weight:bold;font-size:14px;margin:3px 0;">{line}</p>')
+            elif abs(i - idx) <= 2:
+                parts.append(f'<p style="color:#cccccc;font-size:13px;margin:2px 0;">{line}</p>')
+            else:
+                parts.append(f'<p style="color:#888888;font-size:12px;margin:1px 0;">{line}</p>')
+        parts.append('</body></html>')
+        self._lyrics_widget.setHtml(''.join(parts))
+        from PyQt6.QtGui import QTextCursor
+        block = self._lyrics_widget.document().findBlockByNumber(idx)
         if block.isValid():
             cursor = QTextCursor(block)
-            cursor.select(QTextCursor.SelectionType.LineUnderCursor)
-            fmt_cur = QTextCharFormat()
-            fmt_cur.setForeground(QColor('#33cc66'))
-            fmt_cur.setFontWeight(700)
-            cursor.setCharFormat(fmt_cur)
-            # Scroller pour voir la ligne
             self._lyrics_widget.setTextCursor(cursor)
             self._lyrics_widget.ensureCursorVisible()
 
