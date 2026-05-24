@@ -23,6 +23,8 @@ class SpotifySource:
             return self._playlist_tracks(url)
         if kind == 'album':
             return self._album_tracks(url)
+        if kind == 'artist':
+            return self._artist_top_tracks(url)
         return []
 
     def enrich_track(self, track: dict) -> dict:
@@ -92,7 +94,7 @@ class SpotifySource:
         return re.sub(r'open\.spotify\.com/intl-[a-z]+/', 'open.spotify.com/', url)
 
     def _parse_kind(self, url: str) -> str | None:
-        for kind in ('track', 'playlist', 'album'):
+        for kind in ('track', 'playlist', 'album', 'artist'):
             if f'/{kind}/' in url:
                 return kind
         return None
