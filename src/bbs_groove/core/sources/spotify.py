@@ -52,6 +52,39 @@ class SpotifySource:
     # ------------------------------------------------------------------ #
 
     @staticmethod
+    def _artist_top_tracks(self, url: str) -> list[dict]:
+        """Simule un best-of artiste via YouTube search (API Spotify embed limitée)."""
+        try:
+            info = self._client.get_artist_info(url)
+            if not info or not info.get('name'):
+                return []
+            artist_name = info['name']
+            import yt_dlp
+            opts = {'quiet': True, 'no_warnings': True, 'noplaylist': True, 'extract_flat': True}
+            query = f'ytsearch20:{artist_name}'
+            with yt_dlp.YoutubeDL(opts) as ydl:
+                res = ydl.extract_info(query, download=False)
+            entries = res.get('entries', []) if res else []
+            tracks = []
+            for e in entries:
+                if not e:
+                    continue
+                dur = e.get('duration') or 0
+                if not (90 <= dur <= 600):  # 1:30 à 10 min — filtrer interviews/lives trop longs
+                    continue
+                title = e.get('title', '')
+                tracks.append(self._format_track({
+                    'name':        title,
+                    'uri':         '',
+                    'id':          '',
+                    'duration_ms': int(dur * 1000),
+                    'artists':     [{'name': artist_name}],
+                    '_yt_url':     e.get('url', ''),
+                }))
+            return tracks
+        except Exception as e:
+            return []
+
     def _normalize_url(url: str) -> str:
         return re.sub(r'open\.spotify\.com/intl-[a-z]+/', 'open.spotify.com/', url)
 
