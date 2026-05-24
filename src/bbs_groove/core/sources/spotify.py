@@ -53,6 +53,7 @@ class SpotifySource:
 
     def _artist_top_tracks(self, url: str) -> list[dict]:
         """Simule un best-of artiste via YouTube search (API Spotify embed limitée)."""
+        print(f'[artist] url={url}', flush=True)
         try:
             info = self._client.get_artist_info(url)
             if not info or not info.get('name'):
@@ -82,6 +83,8 @@ class SpotifySource:
                 }))
             return tracks
         except Exception as e:
+            print(f'[artist] ERROR: {e}', flush=True)
+            import traceback; traceback.print_exc()
             return []
 
     @staticmethod
