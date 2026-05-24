@@ -51,7 +51,6 @@ class SpotifySource:
     #  Privé                                                               #
     # ------------------------------------------------------------------ #
 
-    @staticmethod
     def _artist_top_tracks(self, url: str) -> list[dict]:
         """Simule un best-of artiste via YouTube search (API Spotify embed limitée)."""
         try:
@@ -85,6 +84,7 @@ class SpotifySource:
         except Exception as e:
             return []
 
+    @staticmethod
     def _normalize_url(url: str) -> str:
         return re.sub(r'open\.spotify\.com/intl-[a-z]+/', 'open.spotify.com/', url)
 
