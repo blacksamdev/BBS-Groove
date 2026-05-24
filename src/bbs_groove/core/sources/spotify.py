@@ -61,6 +61,7 @@ class SpotifySource:
             if not info or not info.get('name'):
                 return []
             artist_name = info['name']
+            artist_img  = (info.get('images') or [{}])[0].get('url', '')
             import yt_dlp
             opts = {'quiet': True, 'no_warnings': True, 'noplaylist': True, 'extract_flat': True}
             query = f'ytsearch20:{artist_name}'
@@ -75,14 +76,16 @@ class SpotifySource:
                 if not (90 <= dur <= 600):  # 1:30 à 10 min — filtrer interviews/lives trop longs
                     continue
                 title = e.get('title', '')
-                tracks.append(self._format_track({
+                t = self._format_track({
                     'name':        title,
                     'uri':         '',
                     'id':          '',
                     'duration_ms': int(dur * 1000),
                     'artists':     [{'name': artist_name}],
-                    '_yt_url':     e.get('url', ''),
-                }))
+                })
+                t['artwork_url'] = artist_img
+                t['needs_enrich'] = False
+                tracks.append(t)
             return tracks
         except Exception as e:
             print(f'[artist] ERROR: {e}', flush=True)
