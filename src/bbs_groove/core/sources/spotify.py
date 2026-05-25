@@ -54,6 +54,19 @@ class SpotifySource:
     #  Privé                                                               #
     # ------------------------------------------------------------------ #
 
+    @staticmethod
+    def _base_title(title: str, artist: str) -> str:
+        """Normalise un titre YouTube pour déduplication — retire suffixes clip/live/remix."""
+        t = re.sub(rf'^{re.escape(artist)}\s*[-–—:]\s*', '', title, flags=re.IGNORECASE)
+        t = re.sub(r'\s*[\(\[].*?[\)\]]', '', t)
+        t = re.sub(
+            r'\s*(official|officiel|video|clip|lyrics|lyric|visualizer|'
+            r'live|remix|version|karaok[eé]|piano|paroles|'
+            r'hd|hq|mv|ft\.|feat\.|acoustic|cover)\b.*$',
+            '', t, flags=re.IGNORECASE
+        )
+        return t.strip().lower()
+
     def _artist_top_tracks(self, url: str) -> list[dict]:
         """Simule un best-of artiste via YouTube search (API Spotify embed limitée)."""
         try:
@@ -69,6 +82,7 @@ class SpotifySource:
                 res = ydl.extract_info(query, download=False)
             entries = res.get('entries', []) if res else []
             tracks = []
+            seen: set[str] = set()
             for e in entries:
                 if not e:
                     continue
@@ -88,7 +102,10 @@ class SpotifySource:
                 })
                 t['artwork_url'] = thumb
                 t['needs_enrich'] = False
-                tracks.append(t)
+                base = self._base_title(title, artist_name)
+                if base and base not in seen:
+                    seen.add(base)
+                    tracks.append(t)
             return tracks
         except Exception as e:
             from bbs_groove.logging_utils import log
