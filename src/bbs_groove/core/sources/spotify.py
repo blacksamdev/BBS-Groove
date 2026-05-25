@@ -76,6 +76,11 @@ class SpotifySource:
                 if not (90 <= dur <= 600):  # 1:30 à 10 min — filtrer interviews/lives trop longs
                     continue
                 title = e.get('title', '')
+                import re as _re
+                yt_url  = e.get('url', '')
+                vid     = _re.search(r'(?:v=|youtu\.be/)([^&
+]+)', yt_url)
+                thumb   = f'https://img.youtube.com/vi/{vid.group(1)}/hqdefault.jpg' if vid else artist_img
                 t = self._format_track({
                     'name':        title,
                     'uri':         '',
@@ -83,7 +88,7 @@ class SpotifySource:
                     'duration_ms': int(dur * 1000),
                     'artists':     [{'name': artist_name}],
                 })
-                t['artwork_url'] = artist_img
+                t['artwork_url'] = thumb
                 t['needs_enrich'] = False
                 tracks.append(t)
             return tracks
