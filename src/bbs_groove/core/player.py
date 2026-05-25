@@ -20,12 +20,14 @@ def _mpv_cmd() -> list[str]:
     raise FileNotFoundError("mpv introuvable.\n  flatpak install flathub io.mpv.Mpv")
 
 
-def _kill_all_mpv():
+def _kill_mpv_pid(pid: int):
+    """Tue uniquement le process mpv identifié par son PID."""
+    if pid <= 0:
+        return
     if _IS_FLATPAK:
-        subprocess.run(['flatpak-spawn', '--host', 'pkill', '-x', 'mpv'],     capture_output=True)
-        subprocess.run(['flatpak-spawn', '--host', 'pkill', '-x', 'mpv-bin'], capture_output=True)
+        subprocess.run(['flatpak-spawn', '--host', 'kill', str(pid)], capture_output=True)
     else:
-        subprocess.run(['pkill', '-x', 'mpv'], capture_output=True)
+        subprocess.run(['kill', str(pid)], capture_output=True)
 
 
 class MPVPlayer:
@@ -41,6 +43,7 @@ class MPVPlayer:
         self._monitor_thread: threading.Thread | None = None
         self.on_track_ended: Callable | None = None
         self._volume: int = 100
+        self._mpv_pid: int = 0
 
     # ------------------------------------------------------------------ #
     #  Contrôles publics                                                   #
@@ -70,6 +73,7 @@ class MPVPlayer:
             return
 
         self._started = True
+        self._mpv_pid = int(self._get('pid') or 0)
         log('mpv socket OK — lecture démarrée', 'debug')
         if self._volume != 100:
             self.set_volume(self._volume)
@@ -122,7 +126,8 @@ class MPVPlayer:
             except Exception:
                 pass
             self.process = None
-        _kill_all_mpv()
+        _kill_mpv_pid(self._mpv_pid)
+        self._mpv_pid = 0
         if os.path.exists(self.socket_path):
             try:
                 os.remove(self.socket_path)
