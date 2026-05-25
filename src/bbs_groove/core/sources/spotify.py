@@ -78,7 +78,7 @@ class SpotifySource:
                 title = e.get('title', '')
                 import re as _re
                 yt_url  = e.get('url', '')
-                vid     = _re.search(r'(?:v=|youtu\.be/)([^&
+                vid     = _re.search(r'v=([^&]+)', yt_url)
 ]+)', yt_url)
                 thumb   = f'https://img.youtube.com/vi/{vid.group(1)}/hqdefault.jpg' if vid else artist_img
                 t = self._format_track({
