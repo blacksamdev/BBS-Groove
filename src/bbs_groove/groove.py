@@ -16,19 +16,19 @@ def main():
     from bbs_groove.logging_utils import setup_logging
     setup_logging(debug=args.debug)
 
+    from PyQt6.QtWidgets import QApplication
+    app = QApplication(sys.argv)
+    app.setApplicationName('BBS Groove')
+    app.setStyle('Fusion')
     if args.gaming:
         from bbs_groove.ui.tray import GrooveTray
-        tray = GrooveTray()
-        tray.show()
+        window = GrooveTray()
+        window.show()
     else:
-        from PyQt6.QtWidgets import QApplication
         from bbs_groove.ui.main_window import BBSGrooveWindow
-        app = QApplication(sys.argv)
-        app.setApplicationName('BBS Groove')
-        app.setStyle('Fusion')
         window = BBSGrooveWindow()
         window.show()
-        sys.exit(app.exec())
+    sys.exit(app.exec())
 
 
 if __name__ == '__main__':

@@ -22,12 +22,6 @@ class Resolver:
         'noplaylist':   True,
         'extract_flat': True,
     }
-    _YDL_FLAT = {
-        'quiet':        True,
-        'no_warnings':  True,
-        'noplaylist':   True,
-        'extract_flat': True,
-    }
 
     _DURATION_THRESHOLD = 0.15  # 15% d'écart max
 

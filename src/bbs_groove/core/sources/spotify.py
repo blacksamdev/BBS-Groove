@@ -43,7 +43,8 @@ class SpotifySource:
                     if enriched.get(key):
                         track[key] = enriched[key]
         except Exception as e:
-            pass
+            from bbs_groove.logging_utils import log
+            log(f'enrich_track: {e}', 'warning')
         return track
 
     def close(self):
@@ -75,9 +76,8 @@ class SpotifySource:
                 if not (90 <= dur <= 600):  # 1:30 à 10 min — filtrer interviews/lives trop longs
                     continue
                 title = e.get('title', '')
-                import re as _re
                 yt_url  = e.get('url', '')
-                vid     = _re.search(r'v=([^&]+)', yt_url)
+                vid     = re.search(r'v=([^&]+)', yt_url)
                 thumb   = f'https://img.youtube.com/vi/{vid.group(1)}/hqdefault.jpg' if vid else artist_img
                 t = self._format_track({
                     'name':        title,
@@ -91,6 +91,8 @@ class SpotifySource:
                 tracks.append(t)
             return tracks
         except Exception as e:
+            from bbs_groove.logging_utils import log
+            log(f'artist_top_tracks: {e}', 'warning')
             return []
 
     @staticmethod
@@ -120,7 +122,7 @@ class SpotifySource:
             track = self._client.get_track_info(url)
             return [self._format_track(track, full=True)] if track else []
         artwork      = self._extract_artwork(album)
-        release_date = album.get('release_date', '') or track.get('release_date', '')
+        release_date = album.get('release_date', '')
         year         = release_date[:4] if release_date else ''
         tracks = []
         for t in album.get('tracks', []):

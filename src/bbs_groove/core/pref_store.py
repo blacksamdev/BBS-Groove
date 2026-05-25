@@ -55,8 +55,14 @@ class PrefStore:
 
     @staticmethod
     def _write(path: Path, data: dict):
+        """Écriture atomique via fichier temporaire."""
+        import tempfile, os
         try:
-            with open(path, 'w') as f:
-                json.dump(data, f, indent=2)
+            dir_ = path.parent
+            with tempfile.NamedTemporaryFile('w', dir=dir_, delete=False, suffix='.tmp') as tmp:
+                json.dump(data, tmp, indent=2)
+                tmp_path = tmp.name
+            os.replace(tmp_path, path)
         except Exception as e:
-            pass
+            import logging
+            logging.getLogger('bbs_groove').warning(f'PrefStore write error: {e}')

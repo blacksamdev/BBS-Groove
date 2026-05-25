@@ -24,7 +24,7 @@ class LyricsFetcher:
         except Exception:
             return None
 
-        if not results:
+        if not results or not isinstance(results, list):
             return None
 
         # Choisir le meilleur résultat par proximité de durée
@@ -33,7 +33,7 @@ class LyricsFetcher:
         if duration_s > 0:
             best = min(
                 results,
-                key=lambda r: abs((r.get('duration') or 0) - duration_s)
+                key=lambda item: abs((item.get('duration') or 0) - duration_s)
             )
 
         plain   = best.get('plainLyrics', '') or ''
