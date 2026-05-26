@@ -149,7 +149,7 @@ class BBSGrooveWindow(QMainWindow):
         logo = QLabel('BBS gr<span style="color:#1DB954">OO</span>ve')
         logo.setTextFormat(Qt.TextFormat.RichText)
         logo.setStyleSheet(f'font-size: 16px; font-weight: bold; color: {TEXT_PRI}; background: transparent;')
-        logo.setFixedWidth(130)
+        logo.setFixedWidth(140)
         h.addWidget(logo)
         self._url_input = QLineEdit()
         self._url_input.setPlaceholderText('URL Spotify / Deezer (track, album, playlist, artiste)…')
@@ -171,7 +171,7 @@ class BBSGrooveWindow(QMainWindow):
 
     def _sidebar(self) -> QWidget:
         w = QFrame()
-        w.setFixedWidth(65)
+        w.setFixedWidth(72)
         w.setStyleSheet(f'background: {BG_PANEL}; border-right: 1px solid #222;')
         v = QVBoxLayout(w)
         v.setContentsMargins(0, 12, 0, 12)
@@ -180,11 +180,11 @@ class BBSGrooveWindow(QMainWindow):
         def _nb(icon, label, checkable=False):
             b = QPushButton(f'{icon}\n{label}')
             b.setCheckable(checkable)
-            b.setFixedSize(65, 56)
+            b.setFixedSize(72, 72)
             b.setStyleSheet(f"""
                 QPushButton {{
                     background: transparent; color: {TEXT_SEC};
-                    border: none; font-size: 9px; padding: 4px 2px;
+                    border: none; font-size: 20px; padding: 4px 2px;
                 }}
                 QPushButton:hover {{ background: {BG_ITEM}; color: {TEXT_PRI}; }}
                 QPushButton:checked {{
