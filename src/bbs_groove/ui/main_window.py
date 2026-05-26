@@ -131,7 +131,7 @@ class BBSGrooveWindow(QMainWindow):
         body.setContentsMargins(0, 0, 0, 0)
         body.setSpacing(0)
         body.addWidget(self._sidebar())
-        body.addWidget(self._center_panel(), 1)
+        body.addWidget(self._center_panel(), 2)
         body.addWidget(self._right_panel(), 2)
         layout.addLayout(body, 1)
         layout.addWidget(self._player_bar())
