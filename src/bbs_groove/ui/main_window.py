@@ -625,6 +625,7 @@ class BBSGrooveWindow(QMainWindow):
             item = QListWidgetItem(f"  {i+1:02d}.  {t['artist']}  —  {t['title']}")
             self._list.addItem(item)
         self._lbl_status.setText(f'{len(tracks)} titre(s) chargé(s)')
+        self._btn_add_to_pl.setVisible(True)
         self._start_track(0)
 
     def _on_resolved(self, index: int, url: str):
