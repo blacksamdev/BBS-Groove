@@ -605,16 +605,52 @@ class BBSGrooveWindow(QMainWindow):
 
     def _fetch_tracks(self, url: str):
         try:
-            if self._source is None:
-                self._source = SpotifySource()
-            tracks = self._source.get_tracks(url)
+            # Détecter si c'est une URL ou une recherche libre
+            is_url = url.startswith('http') or 'spotify.com' in url or 'deezer.com' in url
+            if is_url:
+                if self._source is None:
+                    self._source = SpotifySource()
+                tracks = self._source.get_tracks(url)
+            else:
+                tracks = self._search_youtube(url)
             if tracks:
                 self._signals.tracks_loaded.emit(tracks)
             else:
                 self._signals.error.emit('Aucun titre trouvé.')
         except Exception as e:
-            log(f"fetch_candidates: {e}", "warning")
+            log(f"fetch_tracks: {e}", "warning")
             self._signals.error.emit(str(e))
+
+    def _search_youtube(self, query: str) -> list[dict]:
+        """Recherche YouTube Music — retourne jusqu'à 15 résultats."""
+        import yt_dlp, re as _re
+        opts = {"quiet": True, "no_warnings": True, "noplaylist": True, "extract_flat": True}
+        with yt_dlp.YoutubeDL(opts) as ydl:
+            info = ydl.extract_info(f"ytmsearch15:{query}", download=False)
+        entries = info.get("entries", []) if info else []
+        tracks = []
+        for e in entries:
+            if not e:
+                continue
+            dur = e.get("duration") or 0
+            if not (60 <= dur <= 600):
+                continue
+            yt_url  = e.get("url", "")
+            vid     = _re.search(r"v=([^&]+)", yt_url)
+            thumb   = f"https://img.youtube.com/vi/{vid.group(1)}/hqdefault.jpg" if vid else None
+            title   = e.get("title", "")
+            channel = e.get("channel") or e.get("uploader", "")
+            tracks.append({
+                "title":       title,
+                "artist":      channel,
+                "all_artists": channel,
+                "duration_ms": int(dur * 1000),
+                "artwork_url": thumb,
+                "spotify_id":  "",
+                "year":        "",
+                "needs_enrich": False,
+            })
+        return tracks
 
     # ------------------------------------------------------------------ #
     #  Slots UI                                                            #
