@@ -633,7 +633,7 @@ class BBSGrooveWindow(QMainWindow):
             if not e:
                 continue
             dur = e.get("duration") or 0
-            if not (60 <= dur <= 600):
+            if dur <= 0:  # Filtrer seulement les durées inconnues
                 continue
             yt_url  = e.get("url", "")
             vid     = _re.search(r"v=([^&]+)", yt_url)
