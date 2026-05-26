@@ -180,16 +180,16 @@ class BBSGrooveWindow(QMainWindow):
 
     def _sidebar(self) -> QWidget:
         w = QFrame()
-        w.setFixedWidth(72)
+        w.setFixedWidth(55)
         w.setStyleSheet(f'background: {BG_PANEL}; border-right: 1px solid #222;')
         v = QVBoxLayout(w)
         v.setContentsMargins(0, 12, 0, 12)
         v.setSpacing(4)
 
         def _nb(icon, label, checkable=False):
-            b = QPushButton(f'{icon}\n{label}')
+            b = QPushButton(icon)
             b.setCheckable(checkable)
-            b.setFixedSize(72, 72)
+            b.setFixedSize(55, 55)
             b.setStyleSheet(f"""
                 QPushButton {{
                     background: transparent; color: {TEXT_SEC};
@@ -204,17 +204,20 @@ class BBSGrooveWindow(QMainWindow):
             return b
 
         self._nav_queue = _nb('🎵', 'Lecture', checkable=True)
+        self._nav_queue.setToolTip('Lecture')
         self._nav_queue.setChecked(True)
         self._nav_queue.clicked.connect(lambda: self._switch_view(0))
         v.addWidget(self._nav_queue)
 
         self._nav_playlists = _nb('📋', 'Playlists', checkable=True)
+        self._nav_playlists.setToolTip('Mes Playlists')
         self._nav_playlists.clicked.connect(lambda: self._switch_view(1))
         v.addWidget(self._nav_playlists)
 
         v.addStretch()
 
         self._btn_gaming = _nb('🎮', 'Gaming')
+        self._btn_gaming.setToolTip('Mode Gaming')
         self._btn_gaming.clicked.connect(self._switch_gaming)
         v.addWidget(self._btn_gaming)
         return w
