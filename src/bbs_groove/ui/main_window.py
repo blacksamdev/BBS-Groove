@@ -184,7 +184,7 @@ class BBSGrooveWindow(QMainWindow):
             b.setStyleSheet(f"""
                 QPushButton {{
                     background: transparent; color: {TEXT_SEC};
-                    border: none; font-size: 20px; padding: 4px 2px;
+                    border: none; font-size: 12px; padding: 4px 2px;
                 }}
                 QPushButton:hover {{ background: {BG_ITEM}; color: {TEXT_PRI}; }}
                 QPushButton:checked {{
