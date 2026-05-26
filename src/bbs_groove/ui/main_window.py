@@ -193,7 +193,7 @@ class BBSGrooveWindow(QMainWindow):
             b.setStyleSheet(f"""
                 QPushButton {{
                     background: transparent; color: {TEXT_SEC};
-                    border: none; font-size: 12px; padding: 4px 2px;
+                    border: none; font-size: 22px; padding: 4px 2px;
                 }}
                 QPushButton:hover {{ background: {BG_ITEM}; color: {TEXT_PRI}; }}
                 QPushButton:checked {{
@@ -223,6 +223,11 @@ class BBSGrooveWindow(QMainWindow):
         self._nav_queue.setChecked(index == 0)
         self._nav_playlists.setChecked(index == 1)
         self._center_stack.setCurrentIndex(index)
+        if index == 1:
+            if hasattr(self, "_pl_detail") and self._pl_detail.isVisible():
+                self._pl_detail.setVisible(False)
+                if hasattr(self, "_pl_list"): self._pl_list.setVisible(True)
+            self._refresh_pl_list()
 
     def _center_panel(self) -> QWidget:
         from PyQt6.QtWidgets import QStackedWidget
