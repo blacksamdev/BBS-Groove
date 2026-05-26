@@ -285,7 +285,7 @@ class BBSGrooveWindow(QMainWindow):
         pv.addWidget(ph)
         self._pl_list = QListWidget()
         self._pl_list.setStyleSheet(LIST_STYLE)
-        self._pl_list.itemDoubleClicked.connect(self._on_pl_dclick)
+        self._pl_list.itemClicked.connect(self._on_pl_dclick)
         pv.addWidget(self._pl_list)
         self._pl_detail = QFrame()
         self._pl_detail.setStyleSheet(f'background: {BG_PANEL};')
@@ -626,7 +626,7 @@ class BBSGrooveWindow(QMainWindow):
         import yt_dlp, re as _re
         opts = {"quiet": True, "no_warnings": True, "noplaylist": True, "extract_flat": True}
         with yt_dlp.YoutubeDL(opts) as ydl:
-            info = ydl.extract_info(f"ytmsearch15:{query}", download=False)
+            info = ydl.extract_info(f"ytsearch15:{query}", download=False)
         entries = info.get("entries", []) if info else []
         tracks = []
         for e in entries:
@@ -1133,7 +1133,8 @@ class BBSGrooveWindow(QMainWindow):
     def _on_pl_dclick(self, item: QListWidgetItem):
         name = item.data(Qt.ItemDataRole.UserRole)
         if name:
-            self._pl_open(name)
+            self._pl_current = name
+            self._pl_play()
 
     def _pl_open(self, name: str):
         self._pl_current = name
