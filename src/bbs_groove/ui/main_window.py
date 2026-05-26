@@ -1141,6 +1141,7 @@ class BBSGrooveWindow(QMainWindow):
                     f"  {i+1:02d}.  {t.get('artist', '')}  —  {t.get('title', '')}"
                 ))
             self._lbl_status.setText(f'Playlist : {self._pl_current}')
+            self._btn_add_to_pl.setVisible(True)
             self._switch_view(0)
             self._start_track(0)
 
