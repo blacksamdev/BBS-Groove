@@ -203,7 +203,7 @@ class BBSGrooveWindow(QMainWindow):
             """)
             return b
 
-        self._nav_queue = _nb('🏠', 'Lecture', checkable=True)
+        self._nav_queue = _nb('🎵', 'Lecture', checkable=True)
         self._nav_queue.setChecked(True)
         self._nav_queue.clicked.connect(lambda: self._switch_view(0))
         v.addWidget(self._nav_queue)
