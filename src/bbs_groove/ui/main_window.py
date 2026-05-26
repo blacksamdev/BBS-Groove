@@ -394,19 +394,7 @@ class BBSGrooveWindow(QMainWindow):
         )
         vpl.addWidget(self._lbl_status)
 
-        # Bouton ajouter à une playlist perso
-        self._btn_add_to_pl = QPushButton('➕ Ajouter à une playlist')
-        self._btn_add_to_pl.setStyleSheet(f"""
-            QPushButton {{
-                background: {BG_ITEM}; color: {TEXT_SEC};
-                border: 1px solid #333; border-radius: 4px;
-                font-size: 11px; padding: 4px 8px;
-            }}
-            QPushButton:hover {{ color: {ACCENT}; border-color: {ACCENT}; }}
-        """)
-        self._btn_add_to_pl.setVisible(False)
-        self._btn_add_to_pl.clicked.connect(self._on_add_to_playlist)
-        vpl.addWidget(self._btn_add_to_pl)
+
 
         # Séparateur
         sep = QFrame()
@@ -462,6 +450,20 @@ class BBSGrooveWindow(QMainWindow):
         self._versions_panel = vp
         top.addWidget(vp)
         v.addLayout(top)
+
+        # Bouton ajouter à une playlist perso
+        self._btn_add_to_pl = QPushButton('➕  Ajouter à une playlist')
+        self._btn_add_to_pl.setStyleSheet(f"""
+            QPushButton {{
+                background: {BG_ITEM}; color: {TEXT_SEC};
+                border: 1px solid #333; border-radius: 4px;
+                font-size: 11px; padding: 6px 12px; margin: 4px 0px;
+            }}
+            QPushButton:hover {{ color: {ACCENT}; border-color: {ACCENT}; }}
+        """)
+        self._btn_add_to_pl.setVisible(False)
+        self._btn_add_to_pl.clicked.connect(self._on_add_to_playlist)
+        v.addWidget(self._btn_add_to_pl)
 
         # ── Zone lyrics ─────────────────────────────────────────────────
         from PyQt6.QtWidgets import QTextEdit
