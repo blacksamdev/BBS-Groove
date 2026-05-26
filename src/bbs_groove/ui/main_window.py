@@ -1111,15 +1111,39 @@ class BBSGrooveWindow(QMainWindow):
     # ------------------------------------------------------------------ #
 
     def _refresh_pl_list(self):
-        """Rafraîchit la liste des playlists perso."""
+        """Rafraîchit la liste des playlists perso avec boutons inline."""
         if not hasattr(self, "_pl_list"):
             return
         self._pl_list.clear()
         for name in self._playlist_store.names():
             tracks = self._playlist_store.get_tracks(name)
-            item = QListWidgetItem(f'  📋  {name}   ({len(tracks)} titre(s))')
+            item = QListWidgetItem()
             item.setData(Qt.ItemDataRole.UserRole, name)
+            from PyQt6.QtCore import QSize
+            item.setSizeHint(QSize(0, 44))
             self._pl_list.addItem(item)
+            row = QWidget()
+            row.setStyleSheet("background: transparent;")
+            rl = QHBoxLayout(row)
+            rl.setContentsMargins(10, 4, 6, 4)
+            rl.setSpacing(4)
+            lbl = QLabel(f"📋  {name}  ({len(tracks)})")
+            lbl.setStyleSheet(f"color: {TEXT_PRI}; font-size: 12px; background: transparent;")
+            rl.addWidget(lbl)
+            rl.addStretch()
+            for icon, tip, fn in [
+                ("✏️", "Renommer", lambda n=name: self._pl_rename_from_list(n)),
+                ("🗑", "Supprimer", lambda n=name: self._pl_delete(n)),
+            ]:
+                btn = QPushButton(icon)
+                btn.setFixedSize(28, 28)
+                btn.setToolTip(tip)
+                btn.setStyleSheet(
+                    f"background: transparent; border: none; font-size: 14px; color: {TEXT_SEC};"
+                )
+                btn.clicked.connect(fn)
+                rl.addWidget(btn)
+            self._pl_list.setItemWidget(item, row)
 
     def _new_playlist(self):
         from PyQt6.QtWidgets import QInputDialog
@@ -1150,6 +1174,20 @@ class BBSGrooveWindow(QMainWindow):
         self._pl_detail.setVisible(True)
         self._pl_tracks_list.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self._pl_tracks_list.customContextMenuRequested.connect(self._pl_track_menu)
+
+    def _pl_rename_from_list(self, name: str):
+        from PyQt6.QtWidgets import QInputDialog
+        new_name, ok = QInputDialog.getText(self, 'Renommer', 'Nouveau nom :', text=name)
+        if ok and new_name.strip():
+            self._playlist_store.rename(name, new_name.strip())
+            self._refresh_pl_list()
+
+    def _pl_delete(self, name: str):
+        from PyQt6.QtWidgets import QMessageBox
+        r = QMessageBox.question(self, 'Supprimer', f'Supprimer la playlist "{name}" ?')
+        if r == QMessageBox.StandardButton.Yes:
+            self._playlist_store.delete(name)
+            self._refresh_pl_list()
 
     def _pl_back(self):
         self._pl_detail.setVisible(False)
@@ -1226,19 +1264,40 @@ class BBSGrooveWindow(QMainWindow):
         already = self._playlist_store.playlists_containing(track)
         menu = QMenu(self)
         for name in names:
-            act = menu.addAction(f'{"✓ " if name in already else "    "}{name}')
-            act.setEnabled(name not in already)
-            act.setData(name)
+            if name in already:
+                act = menu.addAction(f'✓ {name}  (retirer)')
+                act.setData(f'REMOVE:{name}')
+            else:
+                act = menu.addAction(f'    {name}')
+                act.setData(f'ADD:{name}')
         menu.addSeparator()
         act_new = menu.addAction('+ Nouvelle playlist…')
         chosen = menu.exec(self._btn_add_to_pl.mapToGlobal(
             self._btn_add_to_pl.rect().bottomLeft()
         ))
+        if not chosen:
+            return
         if chosen == act_new:
-            self._new_playlist()
-        elif chosen and chosen.data():
-            if self._playlist_store.add_track(chosen.data(), track):
-                self._lbl_status.setText(f'✅ Ajouté à "{chosen.data()}"')
+            from PyQt6.QtWidgets import QInputDialog
+            pl_name, ok = QInputDialog.getText(self, 'Nouvelle playlist', 'Nom :')
+            if ok and pl_name.strip():
+                self._playlist_store.create(pl_name.strip())
+                if self._playlist_store.add_track(pl_name.strip(), track):
+                    self._lbl_status.setText(f'✅ Ajouté à "{pl_name.strip()}"')
+                self._refresh_pl_list()
+        elif chosen.data() and chosen.data().startswith('ADD:'):
+            pl_name = chosen.data()[4:]
+            if self._playlist_store.add_track(pl_name, track):
+                self._lbl_status.setText(f'✅ Ajouté à "{pl_name}"')
+        elif chosen.data() and chosen.data().startswith('REMOVE:'):
+            pl_name = chosen.data()[7:]
+            tracks_in = self._playlist_store.get_tracks(pl_name)
+            key = self._playlist_store._track_key(track)
+            idx = next((i for i, t in enumerate(tracks_in)
+                        if self._playlist_store._track_key(t) == key), None)
+            if idx is not None:
+                self._playlist_store.remove_track(pl_name, idx)
+                self._lbl_status.setText(f'✅ Retiré de "{pl_name}"')
 
     def _on_volume(self, value: int):
         self._player.set_volume(value)
