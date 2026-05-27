@@ -253,6 +253,8 @@ class BBSGrooveWindow(QMainWindow):
         self._list = QListWidget()
         self._list.setStyleSheet(LIST_STYLE)
         self._list.itemDoubleClicked.connect(self._on_list_dclick)
+        self._list.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self._list.customContextMenuRequested.connect(self._on_queue_track_menu)
         qv.addWidget(self._list)
         self._center_stack.addWidget(queue_w)
 
@@ -286,6 +288,8 @@ class BBSGrooveWindow(QMainWindow):
         self._pl_list = QListWidget()
         self._pl_list.setStyleSheet(LIST_STYLE)
         self._pl_list.itemClicked.connect(self._on_pl_dclick)
+        self._pl_list.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self._pl_list.customContextMenuRequested.connect(self._on_pl_list_menu)
         pv.addWidget(self._pl_list)
         self._pl_detail = QFrame()
         self._pl_detail.setStyleSheet(f'background: {BG_PANEL};')
@@ -1252,8 +1256,8 @@ class BBSGrooveWindow(QMainWindow):
             self._refresh_pl_list()
 
     def _on_add_to_playlist(self):
-        """Ajouter le titre courant à une playlist perso."""
-        track = self._playlist.current_track()
+        """Ajouter/retirer le titre courant (ou cible) d'une playlist."""
+        track = getattr(self, '_ctx_track', None) or self._playlist.current_track()
         if not track:
             return
         from PyQt6.QtWidgets import QMenu
@@ -1305,6 +1309,38 @@ class BBSGrooveWindow(QMainWindow):
             if idx is not None:
                 self._playlist_store.remove_track(pl_name, idx)
                 self._lbl_status.setText(f'✅ Retiré de "{pl_name}"')
+
+    def _on_queue_track_menu(self, pos):
+        """Clic droit sur un titre de la queue → gérer les playlists."""
+        item = self._list.itemAt(pos)
+        if not item:
+            return
+        idx = self._list.row(item)
+        tracks = self._playlist.tracks
+        if idx < len(tracks):
+            track = tracks[idx]
+            # Stocker temporairement le track cible
+            self._ctx_track = track
+            self._on_add_to_playlist()
+            self._ctx_track = None
+
+    def _on_pl_list_menu(self, pos):
+        """Clic droit sur une playlist → renommer / supprimer."""
+        item = self._pl_list.itemAt(pos)
+        if not item:
+            return
+        name = item.data(Qt.ItemDataRole.UserRole)
+        if not name:
+            return
+        from PyQt6.QtWidgets import QMenu
+        menu = QMenu(self)
+        act_rename = menu.addAction('✏️  Renommer')
+        act_delete = menu.addAction('🗑  Supprimer')
+        chosen = menu.exec(self._pl_list.mapToGlobal(pos))
+        if chosen == act_rename:
+            self._pl_rename_from_list(name)
+        elif chosen == act_delete:
+            self._pl_delete(name)
 
     def _on_volume(self, value: int):
         self._player.set_volume(value)
