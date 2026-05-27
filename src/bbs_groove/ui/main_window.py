@@ -1231,7 +1231,7 @@ class BBSGrooveWindow(QMainWindow):
         act = menu.exec(self._pl_tracks_list.mapToGlobal(pos))
         if act == act_del:
             self._playlist_store.remove_track(self._pl_current, idx)
-            self._pl_open(self._pl_current)
+            self._pl_open(self._pl_current)  # refresh
 
     def _save_as_playlist(self):
         """Sauvegarde la queue courante comme playlist perso."""
@@ -1263,12 +1263,17 @@ class BBSGrooveWindow(QMainWindow):
             return
         already = self._playlist_store.playlists_containing(track)
         menu = QMenu(self)
+        from PyQt6.QtGui import QColor
         for name in names:
             if name in already:
-                act = menu.addAction(f'🗑  {name}')
+                act = menu.addAction(f'−  {name}')
                 act.setData(f'REMOVE:{name}')
+                act.setIcon(__import__("PyQt6.QtWidgets", fromlist=["QStyle"]).QStyle.StandardPixmap.SP_DialogNoButton if False else act.icon())
+                # Rouge pour retirer
+                from PyQt6.QtGui import QFont
+                f2 = act.font(); f2.setBold(False); act.setFont(f2)
             else:
-                act = menu.addAction(f'＋  {name}')
+                act = menu.addAction(f'+  {name}')
                 act.setData(f'ADD:{name}')
         menu.addSeparator()
         act_new = menu.addAction('+ Nouvelle playlist…')
