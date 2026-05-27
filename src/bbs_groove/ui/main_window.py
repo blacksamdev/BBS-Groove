@@ -474,7 +474,8 @@ class BBSGrooveWindow(QMainWindow):
             }}
         """)
         self._lyrics_widget.setPlaceholderText('Paroles non disponibles')
-        self._lyrics_widget.setVisible(False)
+        self._lyrics_widget.setPlainText("")
+            self._lyrics_widget.setVisible(True)
         self._lyrics_widget.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         v.addWidget(self._lyrics_widget, 1)
         return w
@@ -767,7 +768,8 @@ class BBSGrooveWindow(QMainWindow):
         if clear_versions:
             self._versions_list.clear()
             self._lyrics_widget.clear()
-            self._lyrics_widget.setVisible(False)
+            self._lyrics_widget.setPlainText("")
+            self._lyrics_widget.setVisible(True)
             self._lyrics_synced = []
             self._lyrics_line   = -1
         self._lbl_title.setText(track.get('title', ''))
@@ -1105,7 +1107,8 @@ class BBSGrooveWindow(QMainWindow):
         else:
             self._lyrics_synced = []
             self._lyrics_widget.clear()
-            self._lyrics_widget.setVisible(False)
+            self._lyrics_widget.setPlainText("")
+            self._lyrics_widget.setVisible(True)
 
     # ------------------------------------------------------------------ #
     #  Playlists perso                                                    #
