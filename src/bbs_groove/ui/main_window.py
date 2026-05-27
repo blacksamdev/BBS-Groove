@@ -116,6 +116,8 @@ class BBSGrooveWindow(QMainWindow):
         self._connect_signals()
         self._build_ui()
         self._setup_timers()
+        self.setMinimumSize(960, 600)
+        self.resize(1200, 720)
 
     # ------------------------------------------------------------------ #
     #  Construction UI                                                     #
@@ -346,7 +348,9 @@ class BBSGrooveWindow(QMainWindow):
 
         # Artwork
         self._artwork = QLabel()
-        self._artwork.setFixedSize(220, 220)
+        self._artwork.setMinimumSize(180, 180)
+        self._artwork.setMaximumSize(320, 320)
+        self._artwork.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self._artwork.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._artwork.setStyleSheet(
             f'background: {BG_ITEM}; border-radius: 8px; color: #444; font-size: 52px;'
@@ -411,6 +415,7 @@ class BBSGrooveWindow(QMainWindow):
 
         # Défaut : page 0 (infos, versions fermées)
         self._info_stack.setCurrentIndex(1 if self._versions_expanded else 0)
+        self._info_stack.setFixedHeight(180)
         vpl.addWidget(self._info_stack)
 
         # ── Séparateur + header Versions EN BAS ──
