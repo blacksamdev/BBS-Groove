@@ -15,6 +15,8 @@ class Playlist:
         self._current:   int = 0
         self.shuffle:    bool = False
         self.repeat:     bool = False
+        self._shuffle_order: list[int] = []
+        self._shuffle_pos:   int = 0
         self._resolver   = Resolver()
         self._pref_store = PrefStore()
         self._lock       = threading.Lock()
@@ -35,6 +37,10 @@ class Playlist:
             self._tracks   = tracks
             self._resolved = {}
             self._current  = 0
+            self._shuffle_order = list(range(len(tracks)))
+            if self.shuffle:
+                random.shuffle(self._shuffle_order)
+            self._shuffle_pos = 0
         self._stop_event.clear()
         self._start_worker(0)
 
@@ -57,12 +63,24 @@ class Playlist:
             if not self._tracks:
                 return None
             if self.shuffle:
-                self._current = random.randint(0, len(self._tracks) - 1)
+                self._shuffle_pos = (self._shuffle_pos + 1) % len(self._shuffle_order)
+                if self._shuffle_pos == 0:
+                    random.shuffle(self._shuffle_order)  # reshuffle au cycle suivant
+                self._current = self._shuffle_order[self._shuffle_pos]
             else:
                 self._current = (self._current + 1) % len(self._tracks)
             idx = self._current
         self._start_worker(idx)
         return self.current_track()
+
+    def set_shuffle(self, enabled: bool):
+        """Active/désactive le shuffle et régénère l'ordre."""
+        with self._lock:
+            self.shuffle = enabled
+            if enabled and self._tracks:
+                self._shuffle_order = list(range(len(self._tracks)))
+                random.shuffle(self._shuffle_order)
+                self._shuffle_pos = 0
 
     def go_prev(self) -> dict | None:
         with self._lock:

@@ -702,7 +702,7 @@ class BBSGrooveWindow(QMainWindow):
             self._play_current()
 
     def _on_shuffle(self, state: bool):
-        self._playlist.shuffle = state
+        self._playlist.set_shuffle(state)
 
     def _on_repeat(self, state: bool):
         self._playlist.repeat = state
