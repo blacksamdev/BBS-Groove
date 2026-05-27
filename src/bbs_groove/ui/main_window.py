@@ -1263,17 +1263,19 @@ class BBSGrooveWindow(QMainWindow):
             return
         already = self._playlist_store.playlists_containing(track)
         menu = QMenu(self)
-        from PyQt6.QtGui import QColor
+        from PyQt6.QtGui import QPixmap, QIcon, QColor
+        def _dot(color):
+            px = QPixmap(12, 12)
+            px.fill(QColor(color))
+            return QIcon(px)
+        icon_add = _dot("#1DB954")
+        icon_rem = _dot("#e05252")
         for name in names:
             if name in already:
-                act = menu.addAction(f'−  {name}')
+                act = menu.addAction(icon_rem, f' {name}')
                 act.setData(f'REMOVE:{name}')
-                act.setIcon(__import__("PyQt6.QtWidgets", fromlist=["QStyle"]).QStyle.StandardPixmap.SP_DialogNoButton if False else act.icon())
-                # Rouge pour retirer
-                from PyQt6.QtGui import QFont
-                f2 = act.font(); f2.setBold(False); act.setFont(f2)
             else:
-                act = menu.addAction(f'+  {name}')
+                act = menu.addAction(icon_add, f' {name}')
                 act.setData(f'ADD:{name}')
         menu.addSeparator()
         act_new = menu.addAction('+ Nouvelle playlist…')
