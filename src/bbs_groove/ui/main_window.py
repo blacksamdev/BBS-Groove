@@ -1026,6 +1026,9 @@ class BBSGrooveWindow(QMainWindow):
                 self._candidates = candidates
                 # Chercher la préférence sauvegardée (YouTube URL) dans les candidats
                 saved_yt = self._pref_store.get(spotify_id) if spotify_id else None
+                if not saved_yt and track:
+                    fk = track.get('artist','').lower() + '|' + track.get('title','').lower()
+                    saved_yt = self._pref_store.get(fk) if fk else None
                 if saved_yt and any(c['url'] == saved_yt for c in candidates):
                     effective_url = saved_yt
                 elif any(c['url'] == current_url for c in candidates):
