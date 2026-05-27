@@ -475,7 +475,7 @@ class BBSGrooveWindow(QMainWindow):
         """)
         self._lyrics_widget.setPlaceholderText('Paroles non disponibles')
         self._lyrics_widget.setPlainText("")
-            self._lyrics_widget.setVisible(True)
+        self._lyrics_widget.setVisible(True)
         self._lyrics_widget.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         v.addWidget(self._lyrics_widget, 1)
         return w
