@@ -134,7 +134,8 @@ class Playlist:
                 track = self._tracks[idx] if idx < len(self._tracks) else None
             if not track:
                 continue
-            # Préférence utilisateur en priorité
+            # Préférence utilisateur en priorité (relire le fichier pour sync avec UI)
+            self._pref_store._prefs = self._pref_store._load(self._pref_store._prefs_path)
             sid = track.get('spotify_id', '')
             saved = self._pref_store.get(sid) if sid else None
             if saved:

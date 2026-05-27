@@ -103,7 +103,7 @@ class BBSGrooveWindow(QMainWindow):
 
         self._pref_store         = PrefStore()
         self._playlist_store     = PlaylistStore()
-        self._versions_expanded  = self._pref_store.get_ui_state("versions_expanded", True)
+        self._versions_expanded  = self._pref_store.get_ui_state("versions_expanded", False)
         self._sleep_timer        = QTimer()
         self._sleep_timer.setSingleShot(True)
         self._sleep_timer.timeout.connect(self._on_sleep_timer)
@@ -426,7 +426,7 @@ class BBSGrooveWindow(QMainWindow):
 
         # Liste des versions
         self._versions_list = QListWidget()
-        self._versions_list.setMaximumHeight(140)
+        self._versions_list.setMaximumHeight(120)
         self._versions_list.setStyleSheet(f"""
             QListWidget {{
                 background: transparent;
@@ -1214,11 +1214,6 @@ class BBSGrooveWindow(QMainWindow):
             self._player.stop()
             self._playing = False
             self._playlist.load(tracks)
-            # Pré-résoudre depuis youtube_url si sauvegardée
-            for i, t in enumerate(tracks):
-                yt = t.get("youtube_url", "")
-                if yt and ("youtube.com" in yt or "youtu.be" in yt):
-                    self._playlist._pref_store.save(t.get("spotify_id", f"_yt_{i}"), yt)
             self._list.clear()
             for i, t in enumerate(tracks):
                 self._list.addItem(QListWidgetItem(
