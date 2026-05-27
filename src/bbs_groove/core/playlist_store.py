@@ -96,6 +96,7 @@ class PlaylistStore:
             'artwork_url': track.get('artwork_url', ''),
             'spotify_id':  track.get('spotify_id', ''),
             'year':        track.get('year', ''),
+            'youtube_url': track.get('youtube_url', ''),
         }
 
     def _load(self) -> dict:

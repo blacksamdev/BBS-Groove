@@ -1136,8 +1136,8 @@ class BBSGrooveWindow(QMainWindow):
             rl.addWidget(lbl)
             rl.addStretch()
             for icon, tip, fn in [
-                ("✏️", "Renommer", lambda n=name: self._pl_rename_from_list(n)),
-                ("🗑", "Supprimer", lambda n=name: self._pl_delete(n)),
+                ("✏️", "Renommer", lambda checked=False, n=name: self._pl_rename_from_list(n)),
+                ("🗑", "Supprimer", lambda checked=False, n=name: self._pl_delete(n)),
             ]:
                 btn = QPushButton(icon)
                 btn.setFixedSize(28, 28)
@@ -1214,6 +1214,11 @@ class BBSGrooveWindow(QMainWindow):
             self._player.stop()
             self._playing = False
             self._playlist.load(tracks)
+            # Pré-résoudre depuis youtube_url si sauvegardée
+            for i, t in enumerate(tracks):
+                yt = t.get("youtube_url", "")
+                if yt and ("youtube.com" in yt or "youtu.be" in yt):
+                    self._playlist._pref_store.save(t.get("spotify_id", f"_yt_{i}"), yt)
             self._list.clear()
             for i, t in enumerate(tracks):
                 self._list.addItem(QListWidgetItem(
@@ -1260,6 +1265,11 @@ class BBSGrooveWindow(QMainWindow):
         track = getattr(self, '_ctx_track', None) or self._playlist.current_track()
         if not track:
             return
+        # Enrichir avec l'URL YouTube actuellement jouée
+        cur_url = self._current_playing_url
+        if cur_url:
+            track = dict(track)
+            track['youtube_url'] = cur_url
         from PyQt6.QtWidgets import QMenu
         names = self._playlist_store.names()
         if not names:
