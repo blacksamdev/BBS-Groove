@@ -210,7 +210,7 @@ class BBSGrooveWindow(QMainWindow):
         v.addWidget(self._nav_queue)
 
         self._nav_playlists = _nb('📋', 'Playlists', checkable=True)
-        self._nav_playlists.setToolTip('Mes Playlists')
+        self._nav_playlists.setToolTip('Playlist')
         self._nav_playlists.clicked.connect(lambda: self._switch_view(1))
         v.addWidget(self._nav_playlists)
 
@@ -267,7 +267,7 @@ class BBSGrooveWindow(QMainWindow):
         ph.setStyleSheet('background: transparent; border-bottom: 1px solid #222;')
         phl = QHBoxLayout(ph)
         phl.setContentsMargins(12, 0, 8, 0)
-        ph_lbl = QLabel('Mes Playlists')
+        ph_lbl = QLabel('Playlist')
         ph_lbl.setStyleSheet(f'color: {TEXT_SEC}; font-size: 12px; font-weight: bold; background: transparent;')
         phl.addWidget(ph_lbl)
         phl.addStretch()
@@ -452,7 +452,7 @@ class BBSGrooveWindow(QMainWindow):
         v.addLayout(top)
 
         # Bouton ajouter à une playlist perso
-        self._btn_add_to_pl = QPushButton('➕  Ajouter à une playlist')
+        self._btn_add_to_pl = QPushButton('☰  Playlist')
         self._btn_add_to_pl.setStyleSheet(f"""
             QPushButton {{
                 background: {BG_ITEM}; color: {TEXT_SEC};
@@ -1265,10 +1265,10 @@ class BBSGrooveWindow(QMainWindow):
         menu = QMenu(self)
         for name in names:
             if name in already:
-                act = menu.addAction(f'✓ {name}  (retirer)')
+                act = menu.addAction(f'🗑  {name}')
                 act.setData(f'REMOVE:{name}')
             else:
-                act = menu.addAction(f'    {name}')
+                act = menu.addAction(f'＋  {name}')
                 act.setData(f'ADD:{name}')
         menu.addSeparator()
         act_new = menu.addAction('+ Nouvelle playlist…')
