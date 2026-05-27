@@ -362,52 +362,64 @@ class BBSGrooveWindow(QMainWindow):
         vpl.setContentsMargins(10, 10, 10, 10)
         vpl.setSpacing(4)
 
-        # Titre
+        # ── QStackedWidget : info (page 0) ou versions (page 1) ──
+        from PyQt6.QtWidgets import QStackedWidget
+        self._info_stack = QStackedWidget()
+
+        # Page 0 : infos titre/artiste/etc
+        info_w = QWidget()
+        info_w.setStyleSheet('background: transparent;')
+        info_v = QVBoxLayout(info_w)
+        info_v.setContentsMargins(0, 0, 0, 0)
+        info_v.setSpacing(4)
         self._lbl_title = QLabel('—')
         self._lbl_title.setStyleSheet(
             f'color: {TEXT_PRI}; font-size: 15px; font-weight: bold; background: transparent;'
         )
         self._lbl_title.setWordWrap(True)
-        vpl.addWidget(self._lbl_title)
-
-        # Artistes
+        info_v.addWidget(self._lbl_title)
         self._lbl_artist = QLabel('')
-        self._lbl_artist.setStyleSheet(
-            f'color: {ACCENT}; font-size: 13px; background: transparent;'
-        )
+        self._lbl_artist.setStyleSheet(f'color: {ACCENT}; font-size: 13px; background: transparent;')
         self._lbl_artist.setWordWrap(True)
-        vpl.addWidget(self._lbl_artist)
-
-        # Album · Année
+        info_v.addWidget(self._lbl_artist)
         self._lbl_album = QLabel('')
-        self._lbl_album.setStyleSheet(
-            f'color: {TEXT_SEC}; font-size: 12px; background: transparent;'
-        )
+        self._lbl_album.setStyleSheet(f'color: {TEXT_SEC}; font-size: 12px; background: transparent;')
         self._lbl_album.setWordWrap(True)
-        vpl.addWidget(self._lbl_album)
-
-        # Durée · Explicit
+        info_v.addWidget(self._lbl_album)
         self._lbl_meta = QLabel('')
         self._lbl_meta.setStyleSheet('color: #666; font-size: 11px; background: transparent;')
-        vpl.addWidget(self._lbl_meta)
-
-        # Status
+        info_v.addWidget(self._lbl_meta)
         self._lbl_status = QLabel('')
-        self._lbl_status.setStyleSheet(
-            f'color: {ACCENT}; font-size: 11px; background: transparent;'
-        )
-        vpl.addWidget(self._lbl_status)
+        self._lbl_status.setStyleSheet(f'color: {ACCENT}; font-size: 11px; background: transparent;')
+        info_v.addWidget(self._lbl_status)
+        info_v.addStretch()
+        self._info_stack.addWidget(info_w)
 
+        # Page 1 : liste des versions
+        self._versions_list = QListWidget()
+        self._versions_list.setStyleSheet(f"""
+            QListWidget {{
+                background: transparent; border: none;
+                color: {TEXT_PRI}; font-size: 11px;
+            }}
+            QListWidget::item {{ padding: 4px 2px; border-bottom: 1px solid #222; }}
+            QListWidget::item:hover {{ background: #2a2a2a; color: {ACCENT}; }}
+            QListWidget::item:selected {{ background: #1a3a1a; color: {ACCENT}; }}
+        """)
+        self._versions_list.itemClicked.connect(self._on_version_clicked)
+        self._info_stack.addWidget(self._versions_list)
 
+        # Défaut : page 0 (infos, versions fermées)
+        self._info_stack.setCurrentIndex(1 if self._versions_expanded else 0)
+        vpl.addWidget(self._info_stack)
 
-        # Séparateur
+        # ── Séparateur + header Versions EN BAS ──
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
         sep.setStyleSheet('color: #333; background: #333;')
         sep.setFixedHeight(1)
         vpl.addWidget(sep)
 
-        # Header versions avec bouton collapse
         hdr = QHBoxLayout()
         lbl_v = QLabel('Versions')
         lbl_v.setStyleSheet(
@@ -423,34 +435,6 @@ class BBSGrooveWindow(QMainWindow):
         hdr.addStretch()
         hdr.addWidget(self._btn_versions)
         vpl.addLayout(hdr)
-
-        # Liste des versions
-        self._versions_list = QListWidget()
-        self._versions_list.setMaximumHeight(120)
-        self._versions_list.setStyleSheet(f"""
-            QListWidget {{
-                background: transparent;
-                border: none;
-                color: {TEXT_PRI};
-                font-size: 11px;
-            }}
-            QListWidget::item {{
-                padding: 4px 2px;
-                border-bottom: 1px solid #222;
-            }}
-            QListWidget::item:hover {{
-                background: #2a2a2a;
-                color: {ACCENT};
-            }}
-            QListWidget::item:selected {{
-                background: #1a3a1a;
-                color: {ACCENT};
-            }}
-        """)
-        self._versions_list.setVisible(self._versions_expanded)
-        self._versions_list.itemClicked.connect(self._on_version_clicked)
-        vpl.addWidget(self._versions_list)
-
         self._versions_panel = vp
         top.addWidget(vp)
         v.addLayout(top)
@@ -931,7 +915,7 @@ class BBSGrooveWindow(QMainWindow):
 
     def _toggle_versions(self):
         self._versions_expanded = not self._versions_expanded
-        self._versions_list.setVisible(self._versions_expanded)
+        self._info_stack.setCurrentIndex(1 if self._versions_expanded else 0)
         self._btn_versions.setText('▼' if self._versions_expanded else '▶')
         self._pref_store.save_ui_state('versions_expanded', self._versions_expanded)
 
