@@ -968,8 +968,13 @@ class BBSGrooveWindow(QMainWindow):
             (c.get('webpage_url', '') for c in self._candidates if c.get('url') == url),
             ''
         ) or url
-        if self._current_spotify_id:
-            self._pref_store.save(self._current_spotify_id, pref_url)
+        pref_key = self._current_spotify_id
+        if not pref_key:
+            t = self._playlist.current_track()
+            if t:
+                pref_key = t.get('artist','').lower() + '|' + t.get('title','').lower()
+        if pref_key:
+            self._pref_store.save(pref_key, pref_url)
         else:
             pass
         # Résoudre le stream frais depuis la webpage_url
