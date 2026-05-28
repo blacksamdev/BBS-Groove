@@ -92,8 +92,15 @@ class BBSGrooveWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('BBS grOOve')
-        from PyQt6.QtGui import QIcon
-        self.setWindowIcon(QIcon.fromTheme('io.github.blacksamdev.Groove'))
+        from PyQt6.QtGui import QIcon, QPixmap, QPainter, QFont, QColor
+        _px = QPixmap(64, 64)
+        _px.fill(QColor(0, 0, 0, 0))
+        _p = QPainter(_px)
+        _p.setFont(QFont('', 44))
+        _p.setPen(QColor('#1DB954'))
+        _p.drawText(_px.rect(), Qt.AlignmentFlag.AlignCenter, '♫')
+        _p.end()
+        self.setWindowIcon(QIcon(_px))
         self.setMinimumSize(720, 560)
         self.setStyleSheet(f'background: {BG_MAIN}; color: {TEXT_PRI};')
 
@@ -350,15 +357,13 @@ class BBSGrooveWindow(QMainWindow):
 
         # Artwork
         self._artwork = QLabel()
-        self._artwork.setMinimumSize(180, 180)
-        self._artwork.setMaximumSize(320, 320)
-        self._artwork.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self._artwork.setFixedSize(220, 220)
         self._artwork.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._artwork.setStyleSheet(
             'background: #000000; border-radius: 8px; color: #444; font-size: 52px;'
         )
         self._artwork.setText('♫')
-        top.addWidget(self._artwork, 0, Qt.AlignmentFlag.AlignBottom)
+        top.addWidget(self._artwork, 0, Qt.AlignmentFlag.AlignCenter)
 
         # Panel droit : infos + versions
         vp = QFrame()
@@ -438,6 +443,8 @@ class BBSGrooveWindow(QMainWindow):
         lbl_v.setStyleSheet(
             f'color: {TEXT_SEC}; font-size: 11px; font-weight: bold; background: transparent;'
         )
+        lbl_v.setCursor(Qt.CursorShape.PointingHandCursor)
+        lbl_v.mousePressEvent = lambda e: self._toggle_versions()
         hdr.addWidget(self._btn_versions)
         hdr.addWidget(lbl_v)
         hdr.addStretch()
@@ -464,6 +471,7 @@ class BBSGrooveWindow(QMainWindow):
         from PyQt6.QtWidgets import QTextEdit
         self._lyrics_widget = QTextEdit()
         self._lyrics_widget.setReadOnly(True)
+        self._lyrics_widget.document().setDocumentMargin(4)
         self._lyrics_widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self._lyrics_widget.setStyleSheet(f"""
             QTextEdit {{
@@ -926,6 +934,10 @@ class BBSGrooveWindow(QMainWindow):
         self._versions_expanded = not self._versions_expanded
         self._info_stack.setCurrentIndex(1 if self._versions_expanded else 0)
         self._btn_versions.setText('▼' if self._versions_expanded else '▶')
+        self._versions_panel.setStyleSheet(
+            'background: #1a2e1a; border-radius: 6px;' if self._versions_expanded
+            else 'background: #252525; border-radius: 6px;'
+        )
         self._pref_store.save_ui_state('versions_expanded', self._versions_expanded)
 
     def _update_versions_list(self, candidates: list, current_url: str):
