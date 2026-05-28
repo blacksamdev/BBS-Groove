@@ -612,9 +612,13 @@ class BBSGrooveWindow(QMainWindow):
             # Détecter si c'est une URL ou une recherche libre
             is_url = url.startswith('http') or 'spotify.com' in url or 'deezer.com' in url
             if is_url:
-                if self._source is None:
-                    self._source = SpotifySource()
-                tracks = self._source.get_tracks(url)
+                if 'deezer.com' in url:
+                    from bbs_groove.core.sources.deezer import DeezerSource
+                    tracks = DeezerSource().get_tracks(url)
+                else:
+                    if self._source is None:
+                        self._source = SpotifySource()
+                    tracks = self._source.get_tracks(url)
             else:
                 tracks = self._search_youtube(url)
             if tracks:
