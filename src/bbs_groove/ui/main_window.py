@@ -355,7 +355,7 @@ class BBSGrooveWindow(QMainWindow):
         self._artwork.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self._artwork.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._artwork.setStyleSheet(
-            f'background: {BG_ITEM}; border-radius: 8px; color: #444; font-size: 52px;'
+            'background: #000000; border-radius: 8px; color: #444; font-size: 52px;'
         )
         self._artwork.setText('♫')
         top.addWidget(self._artwork, 0, Qt.AlignmentFlag.AlignBottom)
