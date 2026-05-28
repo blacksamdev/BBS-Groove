@@ -92,6 +92,8 @@ class BBSGrooveWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('BBS grOOve')
+        from PyQt6.QtGui import QIcon
+        self.setWindowIcon(QIcon.fromTheme('io.github.blacksamdev.Groove'))
         self.setMinimumSize(720, 560)
         self.setStyleSheet(f'background: {BG_MAIN}; color: {TEXT_PRI};')
 
@@ -156,7 +158,7 @@ class BBSGrooveWindow(QMainWindow):
         logo.setFixedWidth(140)
         h.addWidget(logo)
         self._url_input = QLineEdit()
-        self._url_input.setPlaceholderText('URL Spotify / Deezer (track, album, playlist, artiste)…')
+        self._url_input.setPlaceholderText('URL Spotify / Deezer  ou  recherche (artiste, titre, album)…')
         self._url_input.setStyleSheet(f"""
             QLineEdit {{
                 background: {BG_MAIN}; color: {TEXT_PRI};
@@ -356,11 +358,11 @@ class BBSGrooveWindow(QMainWindow):
             f'background: {BG_ITEM}; border-radius: 8px; color: #444; font-size: 52px;'
         )
         self._artwork.setText('♫')
-        top.addWidget(self._artwork, 0, Qt.AlignmentFlag.AlignTop)
+        top.addWidget(self._artwork, 0, Qt.AlignmentFlag.AlignBottom)
 
         # Panel droit : infos + versions
         vp = QFrame()
-        vp.setStyleSheet(f'background: {BG_ITEM}; border-radius: 6px;')
+        vp.setStyleSheet('background: #252525; border-radius: 6px;')
         vp.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
         vpl = QVBoxLayout(vp)
         vpl.setContentsMargins(10, 10, 10, 10)
@@ -426,19 +428,19 @@ class BBSGrooveWindow(QMainWindow):
         vpl.addWidget(sep)
 
         hdr = QHBoxLayout()
+        self._btn_versions = QPushButton('▼' if self._versions_expanded else '▶')
+        self._btn_versions.setFixedSize(24, 24)
+        self._btn_versions.setStyleSheet(
+            f'background: transparent; color: {TEXT_SEC}; border: none; font-size: 16px;'
+        )
+        self._btn_versions.clicked.connect(self._toggle_versions)
         lbl_v = QLabel('Versions')
         lbl_v.setStyleSheet(
             f'color: {TEXT_SEC}; font-size: 11px; font-weight: bold; background: transparent;'
         )
-        self._btn_versions = QPushButton('▼' if self._versions_expanded else '▶')
-        self._btn_versions.setFixedSize(20, 20)
-        self._btn_versions.setStyleSheet(
-            f'background: transparent; color: {TEXT_SEC}; border: none; font-size: 10px;'
-        )
-        self._btn_versions.clicked.connect(self._toggle_versions)
+        hdr.addWidget(self._btn_versions)
         hdr.addWidget(lbl_v)
         hdr.addStretch()
-        hdr.addWidget(self._btn_versions)
         vpl.addLayout(hdr)
         self._versions_panel = vp
         top.addWidget(vp)
