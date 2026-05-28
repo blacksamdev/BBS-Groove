@@ -63,9 +63,15 @@ class Playlist:
             if not self._tracks:
                 return None
             if self.shuffle:
-                self._shuffle_pos = (self._shuffle_pos + 1) % len(self._shuffle_order)
-                if self._shuffle_pos == 0:
-                    random.shuffle(self._shuffle_order)  # reshuffle au cycle suivant
+                next_pos = self._shuffle_pos + 1
+                if next_pos >= len(self._shuffle_order):
+                    if self.repeat:
+                        random.shuffle(self._shuffle_order)
+                        self._shuffle_pos = 0
+                    else:
+                        return None  # fin du cycle shuffle
+                else:
+                    self._shuffle_pos = next_pos
                 self._current = self._shuffle_order[self._shuffle_pos]
             else:
                 self._current = (self._current + 1) % len(self._tracks)
