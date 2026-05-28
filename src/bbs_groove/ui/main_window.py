@@ -937,7 +937,7 @@ class BBSGrooveWindow(QMainWindow):
     def _toggle_versions(self):
         self._versions_expanded = not self._versions_expanded
         self._info_stack.setCurrentIndex(1 if self._versions_expanded else 0)
-        self._btn_versions.setText(('▼' if self._versions_expanded else '▶') + '  Versions')
+        pass  # versions label fixe
         self._versions_panel.setStyleSheet(
             'background: #1a2e1a; border-radius: 6px;' if self._versions_expanded
             else 'background: #252525; border-radius: 6px;'
