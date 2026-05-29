@@ -17,6 +17,7 @@ from bbs_groove.core.player import MPVPlayer
 from bbs_groove.core.sources.spotify import SpotifySource
 from bbs_groove.core.pref_store import PrefStore
 from bbs_groove.core.settings_store import SettingsStore
+from bbs_groove.core.settings_store import SettingsStore
 from bbs_groove.core.playlist_store import PlaylistStore
 
 
@@ -113,6 +114,7 @@ class BBSGrooveWindow(QMainWindow):
 
         self._pref_store         = PrefStore()
         self._playlist_store     = PlaylistStore()
+        self._settings_store     = SettingsStore()
         self._settings_store     = SettingsStore()
         self._versions_expanded  = self._pref_store.get_ui_state("versions_expanded", False)
         self._sleep_timer        = QTimer()
@@ -1373,6 +1375,107 @@ class BBSGrooveWindow(QMainWindow):
             self._pl_rename_from_list(name)
         elif chosen == act_delete:
             self._pl_delete(name)
+
+    def _open_options(self):
+        from bbs_groove.ui.options_dialog import OptionsDialog
+        dlg = OptionsDialog(self._settings_store, self)
+        dlg.exec()
+
+    def _autoplay_similar(self):
+        """Joue des titres similaires après la fin de la playlist."""
+        mode = self._settings_store.get('autoplay_mode')
+        if mode == 'off':
+            return
+        # Collecter les artistes joués
+        artists = list(dict.fromkeys(
+            t.get('artist', '') for t in self._playlist.tracks if t.get('artist')
+        ))[:3]
+        if not artists:
+            return
+        if mode == 'youtube':
+            self._autoplay_youtube(artists)
+        elif mode == 'lastfm':
+            key = self._settings_store.get('lastfm_api_key')
+            if key:
+                self._autoplay_lastfm(artists, key)
+            else:
+                self._autoplay_youtube(artists)
+
+    def _autoplay_youtube(self, artists: list[str]):
+        """Ajoute ~10 titres similaires via YouTube Music search."""
+        import threading
+        def _fetch():
+            import yt_dlp, re as _re
+            tracks = []
+            for artist in artists[:2]:
+                opts = {'quiet': True, 'no_warnings': True, 'extract_flat': True}
+                try:
+                    with yt_dlp.YoutubeDL(opts) as ydl:
+                        info = ydl.extract_info(f'ytsearch5:{artist}', download=False)
+                    for e in (info.get('entries') or []):
+                        if not e:
+                            continue
+                        dur = e.get('duration') or 0
+                        yt_url = e.get('url', '')
+                        vid = _re.search(r'v=([^&]+)', yt_url)
+                        thumb = f'https://img.youtube.com/vi/{vid.group(1)}/hqdefault.jpg' if vid else None
+                        tracks.append({
+                            'title': e.get('title', ''), 'artist': e.get('channel', ''),
+                            'all_artists': e.get('channel', ''), 'duration_ms': int(dur * 1000),
+                            'artwork_url': thumb, 'spotify_id': '', 'year': '', 'needs_enrich': False,
+                        })
+                except Exception:
+                    pass
+            if tracks:
+                self._signals.tracks_loaded.emit(tracks)
+                self._lbl_status.setText('▶ Lecture continue — artistes similaires')
+        threading.Thread(target=_fetch, daemon=True).start()
+
+    def _autoplay_lastfm(self, artists: list[str], api_key: str):
+        """Ajoute des titres d'artistes similaires via Last.fm."""
+        import threading
+        def _fetch():
+            import requests, yt_dlp, re as _re
+            similar = []
+            for artist in artists[:2]:
+                try:
+                    r = requests.get('https://ws.audioscrobbler.com/2.0/', params={
+                        'method': 'artist.getsimilar', 'artist': artist,
+                        'api_key': api_key, 'format': 'json', 'limit': 5
+                    }, timeout=8)
+                    data = r.json()
+                    for a in data.get('similarartists', {}).get('artist', []):
+                        name = a.get('name', '')
+                        if name and name not in similar:
+                            similar.append(name)
+                except Exception:
+                    pass
+            if not similar:
+                similar = artists
+            tracks = []
+            opts = {'quiet': True, 'no_warnings': True, 'extract_flat': True}
+            for artist in similar[:5]:
+                try:
+                    with yt_dlp.YoutubeDL(opts) as ydl:
+                        info = ydl.extract_info(f'ytsearch2:{artist} popular', download=False)
+                    for e in (info.get('entries') or []):
+                        if not e:
+                            continue
+                        dur = e.get('duration') or 0
+                        yt_url = e.get('url', '')
+                        vid = _re.search(r'v=([^&]+)', yt_url)
+                        thumb = f'https://img.youtube.com/vi/{vid.group(1)}/hqdefault.jpg' if vid else None
+                        tracks.append({
+                            'title': e.get('title', ''), 'artist': e.get('channel', ''),
+                            'all_artists': e.get('channel', ''), 'duration_ms': int(dur * 1000),
+                            'artwork_url': thumb, 'spotify_id': '', 'year': '', 'needs_enrich': False,
+                        })
+                except Exception:
+                    pass
+            if tracks:
+                self._signals.tracks_loaded.emit(tracks)
+                self._lbl_status.setText('▶ Lecture continue — Last.fm')
+        threading.Thread(target=_fetch, daemon=True).start()
 
     def _open_options(self):
         from bbs_groove.ui.options_dialog import OptionsDialog
