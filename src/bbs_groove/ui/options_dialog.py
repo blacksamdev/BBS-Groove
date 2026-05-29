@@ -33,7 +33,8 @@ class OptionsDialog(QFrame):
         super().__init__(parent, Qt.WindowType.Popup)
         self._store = settings_store
         self.setFrameShape(QFrame.Shape.StyledPanel)
-        self.setFixedSize(480, 300)
+        self.setFixedWidth(480)
+        self.setMaximumHeight(320)
         self.setStyleSheet(f'background: {BG}; color: {TXT};')
         self._build()
         self._load()

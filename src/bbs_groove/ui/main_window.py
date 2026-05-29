@@ -370,9 +370,7 @@ class BBSGrooveWindow(QMainWindow):
 
         # Artwork
         self._artwork = QLabel()
-        self._artwork.setFixedWidth(220)
-        self._artwork.setMinimumHeight(220)
-        self._artwork.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding)
+        self._artwork.setFixedSize(220, 220)
         self._artwork.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._artwork.setStyleSheet(
             'background: #000000; border-radius: 8px; color: #444; font-size: 52px;'
