@@ -1404,9 +1404,11 @@ class BBSGrooveWindow(QMainWindow):
         if not hasattr(self, "_opts_popup"):
             self._opts_popup = OptionsDialog(self._settings_store, self)
         btn_pos = self._btn_opts.mapToGlobal(self._btn_opts.rect().bottomRight())
-        # largeur = artwork + vp + marges
-        right_w = self._artwork.width() + self._versions_panel.width() + 24
-        self._opts_popup.setFixedWidth(max(right_w, 500))
+        # largeur = du bord droit du centre jusqu'au bord droit de la fenêtre
+        center_right = self._center_stack.mapToGlobal(self._center_stack.rect().topRight()).x()
+        win_right = self.mapToGlobal(self.rect().topRight()).x()
+        right_w = max(win_right - center_right, 500)
+        self._opts_popup.setFixedWidth(right_w)
         self._opts_popup.move(btn_pos.x() - self._opts_popup.width(), btn_pos.y())
         self._opts_popup.show()
 
@@ -1523,9 +1525,11 @@ class BBSGrooveWindow(QMainWindow):
         if not hasattr(self, "_opts_popup"):
             self._opts_popup = OptionsDialog(self._settings_store, self)
         btn_pos = self._btn_opts.mapToGlobal(self._btn_opts.rect().bottomRight())
-        # largeur = artwork + vp + marges
-        right_w = self._artwork.width() + self._versions_panel.width() + 24
-        self._opts_popup.setFixedWidth(max(right_w, 500))
+        # largeur = du bord droit du centre jusqu'au bord droit de la fenêtre
+        center_right = self._center_stack.mapToGlobal(self._center_stack.rect().topRight()).x()
+        win_right = self.mapToGlobal(self.rect().topRight()).x()
+        right_w = max(win_right - center_right, 500)
+        self._opts_popup.setFixedWidth(right_w)
         self._opts_popup.move(btn_pos.x() - self._opts_popup.width(), btn_pos.y())
         self._opts_popup.show()
 

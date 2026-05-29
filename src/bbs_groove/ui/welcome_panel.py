@@ -90,17 +90,20 @@ class WelcomePanel(QWidget):
         self._input.returnPressed.connect(self._on_load)
         v.addWidget(self._input)
 
-        # Boutons principaux
+        # Boutons principaux — une seule ligne
+        row_btns = QHBoxLayout()
+        row_btns.setSpacing(8)
         for icon, label, slot in [
-            ('🎵', 'Charger une playlist',              self._on_load),
-            ('📥', 'Importer une playlist',             self._on_import),
-            ('🔍', "Recherche d'un titre / artiste",    self._on_load),
+            ('🎵', 'Charger une playlist',           self._on_load),
+            ('📥', 'Importer une playlist',          self._on_import),
+            ('🔍', "Recherche d'un titre / artiste", self._on_load),
         ]:
             btn = QPushButton(f'  {icon}   {label}')
             btn.setStyleSheet(CARD_STYLE)
             btn.setCursor(Qt.CursorShape.PointingHandCursor)
             btn.clicked.connect(slot)
-            v.addWidget(btn)
+            row_btns.addWidget(btn)
+        v.addLayout(row_btns)
 
         v.addWidget(_sep())
 
@@ -108,7 +111,7 @@ class WelcomePanel(QWidget):
         row2 = QHBoxLayout()
         row2.setSpacing(12)
         for icon, label, sub, slot in [
-            ('📋', 'Mes playlists grOOve', 'Playlists locales', self._on_playlists),
+            ('📋', 'Mes playlists grOOve', '', self._on_playlists),
             ('⚙', 'Lecture automatique',
              'Continuez l\'écoute après la playlist', self._on_options),
         ]:
