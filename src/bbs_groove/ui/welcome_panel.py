@@ -108,14 +108,12 @@ class WelcomePanel(QWidget):
         row2 = QHBoxLayout()
         row2.setSpacing(12)
         for icon, label, sub, slot in [
-            ('📋', 'Mes playlists grOOve',
-             'Retrouvez vos playlists sauvegardées', self._on_playlists),
+            ('📋', 'Mes playlists grOOve', 'Playlists locales', self._on_playlists),
             ('⚙', 'Lecture automatique',
              'Continuez l\'écoute après la playlist', self._on_options),
         ]:
             btn = QPushButton(f'  {icon}   {label}\n       {sub}')
             btn.setStyleSheet(ACCENT_CARD)
-            btn.setWordWrap(True)
             btn.setCursor(Qt.CursorShape.PointingHandCursor)
             btn.clicked.connect(slot)
             row2.addWidget(btn)
