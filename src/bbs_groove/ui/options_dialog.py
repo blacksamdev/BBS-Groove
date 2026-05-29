@@ -28,12 +28,11 @@ BTN2 = f"""
 """
 
 
-class OptionsDialog(QDialog):
+class OptionsDialog(QFrame):
     def __init__(self, settings_store, parent=None):
-        super().__init__(parent)
+        super().__init__(parent, Qt.WindowType.Popup)
         self._store = settings_store
-        self.setWindowTitle('Options')
-        self.setModal(True)
+        self.setFrameShape(QFrame.Shape.StyledPanel)
         self.setFixedSize(480, 300)
         self.setStyleSheet(f'background: {BG}; color: {TXT};')
         self._build()
@@ -45,7 +44,7 @@ class OptionsDialog(QDialog):
         v.setSpacing(12)
 
         # Titre section
-        lbl = QLabel('Continuer après la playlist')
+        lbl = QLabel('Lecture automatique')
         lbl.setStyleSheet(f'color: {TXT}; font-size: 13px; font-weight: bold;')
         v.addWidget(lbl)
 
@@ -120,7 +119,7 @@ class OptionsDialog(QDialog):
         brow.addStretch()
         btn_close = QPushButton('Fermer')
         btn_close.setStyleSheet(BTN2)
-        btn_close.clicked.connect(self.accept)
+        btn_close.clicked.connect(self.hide)
         brow.addWidget(btn_close)
         v.addLayout(brow)
 

@@ -1376,10 +1376,11 @@ class BBSGrooveWindow(QMainWindow):
 
     def _open_options(self):
         from bbs_groove.ui.options_dialog import OptionsDialog
-        dlg = OptionsDialog(self._settings_store, self)
+        if not hasattr(self, "_opts_popup"):
+            self._opts_popup = OptionsDialog(self._settings_store, self)
         btn_pos = self._btn_opts.mapToGlobal(self._btn_opts.rect().bottomRight())
-        dlg.move(btn_pos.x() - dlg.width(), btn_pos.y())
-        dlg.exec()
+        self._opts_popup.move(btn_pos.x() - self._opts_popup.width(), btn_pos.y())
+        self._opts_popup.show()
 
     def _autoplay_similar(self):
         """Joue des titres similaires après la fin de la playlist."""
@@ -1479,10 +1480,11 @@ class BBSGrooveWindow(QMainWindow):
 
     def _open_options(self):
         from bbs_groove.ui.options_dialog import OptionsDialog
-        dlg = OptionsDialog(self._settings_store, self)
+        if not hasattr(self, "_opts_popup"):
+            self._opts_popup = OptionsDialog(self._settings_store, self)
         btn_pos = self._btn_opts.mapToGlobal(self._btn_opts.rect().bottomRight())
-        dlg.move(btn_pos.x() - dlg.width(), btn_pos.y())
-        dlg.exec()
+        self._opts_popup.move(btn_pos.x() - self._opts_popup.width(), btn_pos.y())
+        self._opts_popup.show()
 
     def _autoplay_similar(self):
         """Joue des titres similaires après la fin de la playlist."""
