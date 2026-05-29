@@ -381,7 +381,7 @@ class BBSGrooveWindow(QMainWindow):
 
         # Artwork
         self._artwork = QLabel()
-        self._artwork.setFixedSize(220, 220)
+        self._artwork.setFixedSize(224, 224)
         self._artwork.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._artwork.setStyleSheet(
             'background: #000000; border-radius: 8px; color: #444; font-size: 52px;'
@@ -1404,8 +1404,9 @@ class BBSGrooveWindow(QMainWindow):
         if not hasattr(self, "_opts_popup"):
             self._opts_popup = OptionsDialog(self._settings_store, self)
         btn_pos = self._btn_opts.mapToGlobal(self._btn_opts.rect().bottomRight())
-        w = self._lyrics_widget.width() + 20
-        self._opts_popup.setFixedWidth(max(w, 480))
+        # largeur = artwork + vp + marges
+        right_w = self._artwork.width() + self._versions_panel.width() + 24
+        self._opts_popup.setFixedWidth(max(right_w, 500))
         self._opts_popup.move(btn_pos.x() - self._opts_popup.width(), btn_pos.y())
         self._opts_popup.show()
 
@@ -1522,8 +1523,9 @@ class BBSGrooveWindow(QMainWindow):
         if not hasattr(self, "_opts_popup"):
             self._opts_popup = OptionsDialog(self._settings_store, self)
         btn_pos = self._btn_opts.mapToGlobal(self._btn_opts.rect().bottomRight())
-        w = self._lyrics_widget.width() + 20
-        self._opts_popup.setFixedWidth(max(w, 480))
+        # largeur = artwork + vp + marges
+        right_w = self._artwork.width() + self._versions_panel.width() + 24
+        self._opts_popup.setFixedWidth(max(right_w, 500))
         self._opts_popup.move(btn_pos.x() - self._opts_popup.width(), btn_pos.y())
         self._opts_popup.show()
 

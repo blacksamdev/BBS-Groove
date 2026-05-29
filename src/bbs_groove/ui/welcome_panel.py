@@ -115,6 +115,7 @@ class WelcomePanel(QWidget):
         ]:
             btn = QPushButton(f'  {icon}   {label}\n       {sub}')
             btn.setStyleSheet(ACCENT_CARD)
+            btn.setWordWrap(True)
             btn.setCursor(Qt.CursorShape.PointingHandCursor)
             btn.clicked.connect(slot)
             row2.addWidget(btn)
