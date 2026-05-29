@@ -131,6 +131,8 @@ class BBSGrooveWindow(QMainWindow):
         self._setup_timers()
         self.setMinimumSize(960, 600)
         self.resize(1200, 720)
+        self._center_stack.setCurrentIndex(2)
+        self._welcome.focus_input()
 
     # ------------------------------------------------------------------ #
     #  Construction UI                                                     #
@@ -353,6 +355,15 @@ class BBSGrooveWindow(QMainWindow):
         pv.addWidget(self._pl_detail)
         self._center_stack.addWidget(playlists_w)
         self._pl_current = ''
+
+        # Vue 2 : Welcome screen (affiché au démarrage)
+        from bbs_groove.ui.welcome_panel import WelcomePanel
+        self._welcome = WelcomePanel()
+        self._welcome.sig_load.connect(self._welcome_load)
+        self._welcome.sig_import.connect(self._welcome_import)
+        self._welcome.sig_playlists.connect(lambda: self._switch_view(1))
+        self._welcome.sig_options.connect(self._open_options)
+        self._center_stack.addWidget(self._welcome)
         return self._center_stack
 
     def _right_panel(self) -> QWidget:
@@ -1374,6 +1385,18 @@ class BBSGrooveWindow(QMainWindow):
         elif chosen == act_delete:
             self._pl_delete(name)
 
+    def _welcome_load(self, query: str):
+        """Charger depuis le welcome screen."""
+        if query:
+            self._url_input.setText(query)
+        self._load_url()
+
+    def _welcome_import(self, query: str):
+        """Importer une playlist depuis le welcome screen."""
+        if query:
+            self._url_input.setText(query)
+        self._save_as_playlist()
+
     def _open_options(self):
         from bbs_groove.ui.options_dialog import OptionsDialog
         if not hasattr(self, "_opts_popup"):
@@ -1479,6 +1502,18 @@ class BBSGrooveWindow(QMainWindow):
                 self._signals.tracks_loaded.emit(tracks)
                 self._lbl_status.setText('▶ Lecture continue — Last.fm')
         threading.Thread(target=_fetch, daemon=True).start()
+
+    def _welcome_load(self, query: str):
+        """Charger depuis le welcome screen."""
+        if query:
+            self._url_input.setText(query)
+        self._load_url()
+
+    def _welcome_import(self, query: str):
+        """Importer une playlist depuis le welcome screen."""
+        if query:
+            self._url_input.setText(query)
+        self._save_as_playlist()
 
     def _open_options(self):
         from bbs_groove.ui.options_dialog import OptionsDialog

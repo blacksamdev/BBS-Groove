@@ -50,7 +50,8 @@
         "install -Dm644 data/io.github.blacksamdev.Groove.desktop /app/share/applications/io.github.blacksamdev.Groove.desktop",
         "install -Dm644 data/io.github.blacksamdev.Groove.svg /app/share/icons/hicolor/scalable/apps/io.github.blacksamdev.Groove.svg",
         "install -Dm644 src/bbs_groove/core/settings_store.py /app/lib/bbs-groove/src/bbs_groove/core/settings_store.py",
-        "install -Dm644 src/bbs_groove/ui/options_dialog.py /app/lib/bbs-groove/src/bbs_groove/ui/options_dialog.py"
+        "install -Dm644 src/bbs_groove/ui/options_dialog.py /app/lib/bbs-groove/src/bbs_groove/ui/options_dialog.py",
+        "install -Dm644 src/bbs_groove/ui/welcome_panel.py /app/lib/bbs-groove/src/bbs_groove/ui/welcome_panel.py"
       ],
       "sources": [
         {
