@@ -192,9 +192,9 @@ class BBSGrooveWindow(QMainWindow):
         btn_save.clicked.connect(self._save_as_playlist)
         h.addWidget(btn_save)
 
-        btn_opts = QPushButton('⚙')
+        btn_opts = QPushButton('⚙  ▼')
         btn_opts.setToolTip('Options')
-        btn_opts.setFixedWidth(36)
+        btn_opts.setFixedWidth(52)
         btn_opts.setStyleSheet(BTN_STYLE)
         btn_opts.clicked.connect(self._open_options)
         h.addWidget(btn_opts)
@@ -444,20 +444,13 @@ class BBSGrooveWindow(QMainWindow):
         vpl.addWidget(sep)
 
         hdr = QHBoxLayout()
-        self._btn_versions = QPushButton('▼' if self._versions_expanded else '▶')
-        self._btn_versions.setFixedSize(24, 24)
+        self._btn_versions = QLabel('Versions')
         self._btn_versions.setStyleSheet(
-            f'background: transparent; color: {TEXT_SEC}; border: none; font-size: 16px;'
-        )
-        self._btn_versions.clicked.connect(self._toggle_versions)
-        lbl_v = QLabel('Versions')
-        lbl_v.setStyleSheet(
             f'color: {TEXT_SEC}; font-size: 11px; font-weight: bold; background: transparent;'
         )
-        lbl_v.setCursor(Qt.CursorShape.PointingHandCursor)
-        lbl_v.mousePressEvent = lambda e: self._toggle_versions()
+        self._btn_versions.setCursor(Qt.CursorShape.PointingHandCursor)
+        self._btn_versions.mousePressEvent = lambda e: self._toggle_versions()
         hdr.addWidget(self._btn_versions)
-        hdr.addWidget(lbl_v)
         hdr.addStretch()
         vpl.addLayout(hdr)
         self._versions_panel = vp
@@ -1382,6 +1375,8 @@ class BBSGrooveWindow(QMainWindow):
     def _open_options(self):
         from bbs_groove.ui.options_dialog import OptionsDialog
         dlg = OptionsDialog(self._settings_store, self)
+        geo = self.geometry()
+        dlg.move(geo.right() - dlg.width() - 10, geo.top() + 52)
         dlg.exec()
 
     def _autoplay_similar(self):
@@ -1483,6 +1478,8 @@ class BBSGrooveWindow(QMainWindow):
     def _open_options(self):
         from bbs_groove.ui.options_dialog import OptionsDialog
         dlg = OptionsDialog(self._settings_store, self)
+        geo = self.geometry()
+        dlg.move(geo.right() - dlg.width() - 10, geo.top() + 52)
         dlg.exec()
 
     def _autoplay_similar(self):

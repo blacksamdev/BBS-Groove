@@ -69,7 +69,12 @@ class OptionsDialog(QDialog):
             rl.setSpacing(2)
             rb = QRadioButton(txt)
             rb.setProperty('value', val)
-            rb.setStyleSheet(f'color: {TXT}; font-size: 12px; background: transparent;')
+            rb.setStyleSheet(f'''
+                QRadioButton {{ color: {TXT}; font-size: 12px; background: transparent; }}
+                QRadioButton::indicator {{ width: 14px; height: 14px; border-radius: 7px;
+                    border: 2px solid #666; background: transparent; }}
+                QRadioButton::indicator:checked {{ border: 2px solid {ACC}; background: {ACC}; }}
+            ''')
             self._grp.addButton(rb)
             rl.addWidget(rb)
             if sub:
@@ -100,6 +105,10 @@ class OptionsDialog(QDialog):
                 btn_save_key.setToolTip('Sauvegarder la clé')
                 kl.addWidget(self._key_input)
                 kl.addWidget(btn_save_key)
+                link = QLabel('<a href="https://www.last.fm/api/account/create" style="color:#1DB954;">Obtenir une clé gratuite sur last.fm/api</a>')
+                link.setOpenExternalLinks(True)
+                link.setStyleSheet('background: transparent; font-size: 10px; padding-left: 20px;')
+                v.addWidget(link)
                 v.addWidget(self._lastfm_row)
 
         self._grp.buttonClicked.connect(self._on_mode_change)
