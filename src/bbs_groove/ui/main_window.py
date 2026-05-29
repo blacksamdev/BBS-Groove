@@ -716,9 +716,12 @@ class BBSGrooveWindow(QMainWindow):
             self._play_current()
             return
         track = self._playlist.go_next()
-        if track:
-            self._update_track_display(track)
-            self._play_current()
+        if track is None:
+            self._playing = False
+            self._autoplay_similar()
+            return
+        self._update_track_display(track)
+        self._play_current()
 
     def _on_prev(self):
         track = self._playlist.go_prev()
