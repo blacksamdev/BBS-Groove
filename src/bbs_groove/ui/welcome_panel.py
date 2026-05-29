@@ -75,7 +75,7 @@ class WelcomePanel(QWidget):
         inner = QWidget()
         inner.setStyleSheet(f'background: {BG};')
         v = QVBoxLayout(inner)
-        v.setContentsMargins(40, 32, 40, 32)
+        v.setContentsMargins(20, 24, 20, 24)
         v.setSpacing(20)
 
         # Titre
@@ -96,9 +96,9 @@ class WelcomePanel(QWidget):
         for icon, label, slot in [
             ('🎵', 'Charger une playlist',           self._on_load),
             ('📥', 'Importer une playlist',          self._on_import),
-            ('🔍', "Recherche d'un titre / artiste", self._on_load),
+            ('🔍', '🔍 Rechercher', self._on_load),
         ]:
-            btn = QPushButton(f'  {icon}   {label}')
+            btn = QPushButton(f'{icon}  {label}')
             btn.setStyleSheet(CARD_STYLE)
             btn.setCursor(Qt.CursorShape.PointingHandCursor)
             btn.clicked.connect(slot)
@@ -113,7 +113,7 @@ class WelcomePanel(QWidget):
         for icon, label, sub, slot in [
             ('📋', 'Mes playlists grOOve', '', self._on_playlists),
             ('⚙', 'Lecture automatique',
-             'Continuez l\'écoute après la playlist', self._on_options),
+             'Après la playlist', self._on_options),
         ]:
             btn = QPushButton(f'  {icon}   {label}\n       {sub}')
             btn.setStyleSheet(ACCENT_CARD)
