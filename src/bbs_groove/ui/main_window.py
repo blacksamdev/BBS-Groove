@@ -192,9 +192,11 @@ class BBSGrooveWindow(QMainWindow):
         btn_save.clicked.connect(self._save_as_playlist)
         h.addWidget(btn_save)
 
-        btn_opts = QPushButton('⚙  ▼')
+        self._btn_opts = QPushButton('⚙  ▼')
+        btn_opts = self._btn_opts
         btn_opts.setToolTip('Options')
-        btn_opts.setFixedWidth(52)
+        btn_opts.setFixedHeight(36)
+        btn_opts.setFixedWidth(60)
         btn_opts.setStyleSheet(BTN_STYLE)
         btn_opts.clicked.connect(self._open_options)
         h.addWidget(btn_opts)
@@ -1375,8 +1377,8 @@ class BBSGrooveWindow(QMainWindow):
     def _open_options(self):
         from bbs_groove.ui.options_dialog import OptionsDialog
         dlg = OptionsDialog(self._settings_store, self)
-        geo = self.geometry()
-        dlg.move(geo.right() - dlg.width() - 10, geo.top() + 52)
+        btn_pos = self._btn_opts.mapToGlobal(self._btn_opts.rect().bottomRight())
+        dlg.move(btn_pos.x() - dlg.width(), btn_pos.y())
         dlg.exec()
 
     def _autoplay_similar(self):
@@ -1478,8 +1480,8 @@ class BBSGrooveWindow(QMainWindow):
     def _open_options(self):
         from bbs_groove.ui.options_dialog import OptionsDialog
         dlg = OptionsDialog(self._settings_store, self)
-        geo = self.geometry()
-        dlg.move(geo.right() - dlg.width() - 10, geo.top() + 52)
+        btn_pos = self._btn_opts.mapToGlobal(self._btn_opts.rect().bottomRight())
+        dlg.move(btn_pos.x() - dlg.width(), btn_pos.y())
         dlg.exec()
 
     def _autoplay_similar(self):
