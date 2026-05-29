@@ -692,6 +692,8 @@ class BBSGrooveWindow(QMainWindow):
             self._list.addItem(item)
         self._lbl_status.setText(f'{len(tracks)} titre(s) chargé(s)')
         self._btn_add_to_pl.setVisible(True)
+        if self._center_stack.currentIndex() == 2:
+            self._switch_view(0)
         self._start_track(0)
 
     def _on_resolved(self, index: int, url: str):
