@@ -1403,13 +1403,12 @@ class BBSGrooveWindow(QMainWindow):
         from bbs_groove.ui.options_dialog import OptionsDialog
         if not hasattr(self, "_opts_popup"):
             self._opts_popup = OptionsDialog(self._settings_store, self)
-        btn_pos = self._btn_opts.mapToGlobal(self._btn_opts.rect().bottomRight())
         # largeur = du bord droit du centre jusqu'au bord droit de la fenêtre
-        center_right = self._center_stack.mapToGlobal(self._center_stack.rect().topRight()).x()
-        win_right = self.mapToGlobal(self.rect().topRight()).x()
-        right_w = max(win_right - center_right, 500)
-        self._opts_popup.setFixedWidth(right_w)
-        self._opts_popup.move(btn_pos.x() - self._opts_popup.width(), btn_pos.y())
+        from PyQt6.QtCore import QPoint as _QP
+        tl = self.mapToGlobal(_QP(0, 0))
+        cx = self._center_stack.x() + self._center_stack.width()
+        self._opts_popup.setFixedWidth(max(self.width() - cx, 400))
+        self._opts_popup.move(tl.x() + cx, tl.y() + 52)
         self._opts_popup.show()
 
     def _autoplay_similar(self):
@@ -1524,13 +1523,12 @@ class BBSGrooveWindow(QMainWindow):
         from bbs_groove.ui.options_dialog import OptionsDialog
         if not hasattr(self, "_opts_popup"):
             self._opts_popup = OptionsDialog(self._settings_store, self)
-        btn_pos = self._btn_opts.mapToGlobal(self._btn_opts.rect().bottomRight())
         # largeur = du bord droit du centre jusqu'au bord droit de la fenêtre
-        center_right = self._center_stack.mapToGlobal(self._center_stack.rect().topRight()).x()
-        win_right = self.mapToGlobal(self.rect().topRight()).x()
-        right_w = max(win_right - center_right, 500)
-        self._opts_popup.setFixedWidth(right_w)
-        self._opts_popup.move(btn_pos.x() - self._opts_popup.width(), btn_pos.y())
+        from PyQt6.QtCore import QPoint as _QP
+        tl = self.mapToGlobal(_QP(0, 0))
+        cx = self._center_stack.x() + self._center_stack.width()
+        self._opts_popup.setFixedWidth(max(self.width() - cx, 400))
+        self._opts_popup.move(tl.x() + cx, tl.y() + 52)
         self._opts_popup.show()
 
     def _autoplay_similar(self):
