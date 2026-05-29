@@ -71,9 +71,11 @@ class WelcomePanel(QWidget):
         scroll.setFrameShape(QFrame.Shape.NoFrame)
         scroll.setStyleSheet('background: transparent; border: none;')
         scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        scroll.setAlignment(Qt.AlignmentFlag.AlignHCenter)
 
         inner = QWidget()
         inner.setStyleSheet(f'background: {BG};')
+        inner.setMaximumWidth(640)
         v = QVBoxLayout(inner)
         v.setContentsMargins(20, 24, 20, 24)
         v.setSpacing(20)
