@@ -74,7 +74,10 @@ class Playlist:
                     self._shuffle_pos = next_pos
                 self._current = self._shuffle_order[self._shuffle_pos]
             else:
-                self._current = (self._current + 1) % len(self._tracks)
+                next_idx = (self._current + 1) % len(self._tracks)
+                if next_idx == 0 and not self.repeat:
+                    return None  # fin de playlist → autoplay
+                self._current = next_idx
             idx = self._current
         self._start_worker(idx)
         return self.current_track()
