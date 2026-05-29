@@ -94,9 +94,9 @@ class WelcomePanel(QWidget):
         row_btns = QHBoxLayout()
         row_btns.setSpacing(8)
         for icon, label, slot in [
-            ('🎵', 'Charger une playlist',           self._on_load),
-            ('📥', 'Importer une playlist',          self._on_import),
-            ('🔍', '🔍 Rechercher', self._on_load),
+            ('🎵', 'Charger',    self._on_load),
+            ('📥', 'Importer',   self._on_import),
+            ('🔍', 'Rechercher', self._on_load),
         ]:
             btn = QPushButton(f'{icon}  {label}')
             btn.setStyleSheet(CARD_STYLE)
