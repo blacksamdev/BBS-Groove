@@ -1408,10 +1408,10 @@ class BBSGrooveWindow(QMainWindow):
         from PyQt6.QtCore import QPoint as _QP
         tl = self.mapToGlobal(_QP(0, 0))
         from PyQt6.QtCore import QPoint as _QP2
-        tr = self._center_stack.mapToGlobal(_QP2(self._center_stack.width(), 0))
-        pw = self.width() - self._center_stack.width() - 55
-        self._opts_popup.setFixedWidth(max(pw, 400))
-        self._opts_popup.move(tr.x(), tr.y())
+        wpos = self.mapToGlobal(_QP2(0, 0))
+        pw = (self.width() - 55) // 2
+        self._opts_popup.setFixedWidth(pw)
+        self._opts_popup.move(wpos.x() + 55 + pw, wpos.y() + 52)
         self._opts_popup.show()
 
     def _autoplay_similar(self):
@@ -1530,10 +1530,10 @@ class BBSGrooveWindow(QMainWindow):
         from PyQt6.QtCore import QPoint as _QP
         tl = self.mapToGlobal(_QP(0, 0))
         from PyQt6.QtCore import QPoint as _QP2
-        tr = self._center_stack.mapToGlobal(_QP2(self._center_stack.width(), 0))
-        pw = self.width() - self._center_stack.width() - 55
-        self._opts_popup.setFixedWidth(max(pw, 400))
-        self._opts_popup.move(tr.x(), tr.y())
+        wpos = self.mapToGlobal(_QP2(0, 0))
+        pw = (self.width() - 55) // 2
+        self._opts_popup.setFixedWidth(pw)
+        self._opts_popup.move(wpos.x() + 55 + pw, wpos.y() + 52)
         self._opts_popup.show()
 
     def _autoplay_similar(self):
