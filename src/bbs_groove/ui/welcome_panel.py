@@ -36,7 +36,7 @@ ACCENT_CARD = f"""
 
 INPUT_STYLE = f"""
     QLineEdit {{
-        background: {BG2}; color: {TXT};
+        background: #0d0d0d; color: {TXT};
         border: 1px solid {BORDER}; border-radius: 6px;
         padding: 10px 14px; font-size: 14px;
     }}
@@ -96,7 +96,7 @@ class WelcomePanel(QWidget):
         row_btns = QHBoxLayout()
         row_btns.setSpacing(8)
         for icon, label, slot in [
-            ('🎵', 'Charger',    self._on_load),
+            ('⏎', 'Charger',    self._on_load),
             ('📥', 'Importer',   self._on_import),
             ('🔍', 'Rechercher', self._on_load),
         ]:
