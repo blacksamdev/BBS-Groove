@@ -1408,10 +1408,10 @@ class BBSGrooveWindow(QMainWindow):
         from PyQt6.QtCore import QPoint as _QP
         tl = self.mapToGlobal(_QP(0, 0))
         from PyQt6.QtCore import QPoint as _QP2
-        wpos = self.mapToGlobal(_QP2(0, 0))
-        pw = (self.width() - 55) // 2
+        lpos = self._lyrics_widget.mapToGlobal(_QP2(0, 0))
+        pw = self._lyrics_widget.width()
         self._opts_popup.setFixedWidth(pw)
-        self._opts_popup.move(wpos.x() + 55 + pw, wpos.y() + 52)
+        self._opts_popup.move(lpos.x(), self.mapToGlobal(_QP2(0, 52)).y())
         self._opts_popup.show()
 
     def _autoplay_similar(self):
@@ -1530,10 +1530,10 @@ class BBSGrooveWindow(QMainWindow):
         from PyQt6.QtCore import QPoint as _QP
         tl = self.mapToGlobal(_QP(0, 0))
         from PyQt6.QtCore import QPoint as _QP2
-        wpos = self.mapToGlobal(_QP2(0, 0))
-        pw = (self.width() - 55) // 2
+        lpos = self._lyrics_widget.mapToGlobal(_QP2(0, 0))
+        pw = self._lyrics_widget.width()
         self._opts_popup.setFixedWidth(pw)
-        self._opts_popup.move(wpos.x() + 55 + pw, wpos.y() + 52)
+        self._opts_popup.move(lpos.x(), self.mapToGlobal(_QP2(0, 52)).y())
         self._opts_popup.show()
 
     def _autoplay_similar(self):
