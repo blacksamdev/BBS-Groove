@@ -261,6 +261,7 @@ class BBSGrooveWindow(QMainWindow):
     def _center_panel(self) -> QWidget:
         from PyQt6.QtWidgets import QStackedWidget
         self._center_stack = QStackedWidget()
+        self._center_stack.setStyleSheet(f'background: {BG_PANEL};')
 
         # Vue 0 : Queue
         queue_w = QFrame()
