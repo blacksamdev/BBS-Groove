@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import Qt, pyqtSignal
 
-BG      = '#1e1e1e'
+BG      = '#1a1a1a'
 BG2     = '#252525'
 ACCENT  = '#1DB954'
 TXT     = '#ffffff'
@@ -62,7 +62,7 @@ class WelcomePanel(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setStyleSheet('background: #1e1e1e;')
+        self.setStyleSheet('background: #1a1a1a;')
         self._build()
 
     def _build(self):
@@ -74,7 +74,7 @@ class WelcomePanel(QWidget):
         scroll.setAlignment(Qt.AlignmentFlag.AlignHCenter)
 
         inner = QWidget()
-        inner.setStyleSheet('background: #1e1e1e;')
+        inner.setStyleSheet('background: #1a1a1a;')
         inner.setMaximumWidth(640)
         v = QVBoxLayout(inner)
         v.setContentsMargins(20, 24, 20, 24)
