@@ -1407,7 +1407,7 @@ class BBSGrooveWindow(QMainWindow):
         from PyQt6.QtCore import QPoint as _QP
         tl = self.mapToGlobal(_QP(0, 0))
         cx = self._center_stack.x() + self._center_stack.width()
-        self._opts_popup.setFixedWidth(self._artwork.width() + self._versions_panel.width())
+        self._opts_popup.setFixedWidth((self.width() - 55) // 2)
         self._opts_popup.move(tl.x() + cx, tl.y() + 52)
         self._opts_popup.show()
 
@@ -1527,7 +1527,7 @@ class BBSGrooveWindow(QMainWindow):
         from PyQt6.QtCore import QPoint as _QP
         tl = self.mapToGlobal(_QP(0, 0))
         cx = self._center_stack.x() + self._center_stack.width()
-        self._opts_popup.setFixedWidth(self._artwork.width() + self._versions_panel.width())
+        self._opts_popup.setFixedWidth((self.width() - 55) // 2)
         self._opts_popup.move(tl.x() + cx, tl.y() + 52)
         self._opts_popup.show()
 
