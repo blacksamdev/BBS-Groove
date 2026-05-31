@@ -12,12 +12,15 @@ BBS grOOve résout chaque titre Spotify, Deezer ou recherche libre via scraping 
 - **Résolution intelligente** : sélectionne la version YouTube la plus proche de la durée originale
 - **Sélection de version** : choisir manuellement la version YouTube par titre — persistant cross-session
 - **Playlists perso** : créer, renommer, supprimer des playlists locales — ajouter/retirer des titres via clic droit ou bouton ☰
-- **Sauvegarde** : enregistrer une playlist Spotify/Deezer en local via le bouton 💾
+- **Sauvegarde** : importer une playlist Spotify/Deezer en local via le bouton 📥
+- **Recherche intégrée** : taper directement un artiste ou un titre dans le champ URL
+- **Lecture automatique** : continuer l'écoute après la fin d'une playlist via YouTube Music ou Last.fm
 - **Artwork + métadonnées** : pochette, artiste, année affichés
 - **Paroles synchronisées** : karaoké défilant via lrclib.net
 - **Sleep timer** : arrêt automatique 15/30/45/60 min avec compte à rebours
 - **Mode Gaming** : mini-player flottant draggable
-- **Shuffle / Repeat** : lecture aléatoire ou en boucle
+- **Shuffle séquentiel** : chaque titre joué une seule fois par cycle
+- **Repeat** : boucle sur le titre courant
 - **Préchargement** : 3 titres résolus en avance pour une lecture fluide
 - **Kill mpv ciblé** : uniquement le process de l'app, pas tous les mpv du système
 
@@ -26,17 +29,18 @@ BBS grOOve résout chaque titre Spotify, Deezer ou recherche libre via scraping 
 ## Interface
 
 ```
-┌──────┬──────────────────────────────────────────┐
-│      │  [URL / recherche libre...]   [Charger] [💾]│
-│  🎵  ├──────────────────────────┬───────────────┤
-│      │                          │  Artwork      │
-│  📋  │   01. Artiste — Titre    │  Titre        │
-│      │   02. Artiste — Titre    │  Artiste·Année│
-│  🎮  │   ...                    │  ──────────── │
-│      │                          │  Versions ▶   │
-├──────┴──────────────────────────┴───────────────┤
-│  ⇄  ◀◀  ▶  ▶▶  ↺   ━━━━●━━━  🔊━━━  ⏱ Timer  │
-└──────────────────────────────────────────────────┘
+┌──────┬──────────────────────────────────────────────┐
+│      │  [URL / recherche...]   [⏎] [📥] [⚙ ▼]      │
+│  🎵  ├──────────────────────┬───────────────────────┤
+│      │                      │  Artwork              │
+│  📋  │  Welcome screen ou   │  Titre · Artiste      │
+│      │  Queue de lecture     │  ──────────────────  │
+│  🎮  │  ou Mes Playlists    │  Versions             │
+│      │                      │  ──────────────────  │
+│      │                      │  Paroles              │
+├──────┴──────────────────────┴───────────────────────┤
+│  ⇄  ◀◀  ▶  ▶▶  ↺   ━━━━●━━━  🔊━━━  ⏱ Timer      │
+└─────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -51,9 +55,10 @@ https://open.spotify.com/artist/...
 https://www.deezer.com/track/...
 https://www.deezer.com/album/...
 https://www.deezer.com/playlist/...
+https://www.deezer.com/artist/...
 ```
 
-Ou simplement taper un nom d'artiste / titre dans le champ.
+Ou taper directement un nom d'artiste / titre dans le champ.
 
 ---
 
@@ -95,6 +100,7 @@ Stockées dans `~/.config/bbs-groove/` :
 | `track_prefs.json` | Versions YouTube préférées par titre |
 | `ui_state.json` | État de l'interface |
 | `my_playlists.json` | Playlists personnelles |
+| `settings.json` | Options (lecture automatique, clé Last.fm) |
 
 Aucune donnée envoyée à des tiers.
 
@@ -107,6 +113,7 @@ Aucune donnée envoyée à des tiers.
 | Métadonnées Spotify | spotifyscraper (scraping public) |
 | Métadonnées Deezer | api.deezer.com (public, sans clé) |
 | Recherche libre | yt-dlp ytsearch |
+| Lecture automatique | Last.fm API / YouTube Music |
 | Résolution audio | yt-dlp + YouTube |
 | Lecture | mpv (IPC socket Unix, kill ciblé par PID) |
 | Paroles | lrclib.net (sans clé) |
