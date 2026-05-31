@@ -189,7 +189,7 @@ class BBSGrooveWindow(QMainWindow):
         btn_load.clicked.connect(self._load_url)
         h.addWidget(btn_load)
 
-        btn_save = QPushButton('＋')
+        btn_save = QPushButton('➕')
         btn_save.setToolTip('Sauvegarder comme playlist perso')
         btn_save.setFixedWidth(36)
         btn_save.setStyleSheet(BTN_STYLE)
