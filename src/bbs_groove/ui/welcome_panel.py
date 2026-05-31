@@ -97,7 +97,7 @@ class WelcomePanel(QWidget):
         row_btns.setSpacing(8)
         for icon, label, slot in [
             ('⏎', 'Charger',    self._on_load),
-            ('📥', 'Importer',   self._on_import),
+            ('＋', 'Importer',   self._on_import),
             ('🔍', 'Rechercher', self._on_load),
         ]:
             btn = QPushButton(f'{icon}  {label}')
