@@ -183,7 +183,7 @@ class BBSGrooveWindow(QMainWindow):
         self._url_input.returnPressed.connect(self._load_url)
         h.addWidget(self._url_input)
         btn_load = QPushButton('Charger')
-        btn_load.setFixedWidth(70)
+        btn_load.setFixedWidth(82)
         btn_load.setToolTip('Charger')
         btn_load.setStyleSheet(BTN_STYLE)
         btn_load.clicked.connect(self._load_url)
