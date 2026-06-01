@@ -183,7 +183,7 @@ class BBSGrooveWindow(QMainWindow):
         self._url_input.returnPressed.connect(self._load_url)
         h.addWidget(self._url_input)
         btn_load = QPushButton('↵')
-        btn_load.setFixedWidth(36)
+        btn_load.setFixedSize(36, 36)
         btn_load.setToolTip('Charger')
         btn_load.setStyleSheet(BTN_STYLE)
         btn_load.clicked.connect(self._load_url)
@@ -191,8 +191,7 @@ class BBSGrooveWindow(QMainWindow):
 
         btn_save = QPushButton('+')
         btn_save.setToolTip('Sauvegarder comme playlist perso')
-        btn_save.setFixedWidth(36)
-        btn_save.setStyleSheet(BTN_STYLE + "font-size: 18px; font-weight: bold;")
+        btn_save.setFixedSize(36, 36)
         btn_save.setStyleSheet(BTN_STYLE)
         btn_save.clicked.connect(self._save_as_playlist)
         h.addWidget(btn_save)
