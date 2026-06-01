@@ -161,7 +161,7 @@ class BBSGrooveWindow(QMainWindow):
     def _topbar(self) -> QWidget:
         w = QWidget()
         w.setStyleSheet(f'background: {BG_PANEL}; border-bottom: 1px solid #222;')
-        w.setFixedHeight(52)
+        w.setFixedHeight(44)
         h = QHBoxLayout(w)
         h.setContentsMargins(16, 8, 16, 8)
         h.setSpacing(10)
@@ -183,7 +183,7 @@ class BBSGrooveWindow(QMainWindow):
         self._url_input.returnPressed.connect(self._load_url)
         h.addWidget(self._url_input)
         btn_load = QPushButton('▶️')
-        btn_load.setFixedSize(36, 36)
+        btn_load.setFixedSize(44, 32)
         btn_load.setToolTip('Charger')
         btn_load.setStyleSheet(BTN_STYLE)
         btn_load.clicked.connect(self._load_url)
@@ -191,7 +191,7 @@ class BBSGrooveWindow(QMainWindow):
 
         btn_save = QPushButton('+')
         btn_save.setToolTip('Sauvegarder comme playlist perso')
-        btn_save.setFixedSize(36, 36)
+        btn_save.setFixedSize(44, 32)
         btn_save.setStyleSheet(BTN_STYLE)
         btn_save.clicked.connect(self._save_as_playlist)
         h.addWidget(btn_save)
@@ -199,8 +199,7 @@ class BBSGrooveWindow(QMainWindow):
         self._btn_opts = QPushButton('⚙  ▼')
         btn_opts = self._btn_opts
         btn_opts.setToolTip('Options')
-        btn_opts.setFixedHeight(36)
-        btn_opts.setFixedWidth(60)
+        btn_opts.setFixedSize(60, 32)
         btn_opts.setStyleSheet(BTN_STYLE)
         btn_opts.clicked.connect(self._open_options)
         h.addWidget(btn_opts)
