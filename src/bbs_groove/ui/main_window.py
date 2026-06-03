@@ -194,7 +194,6 @@ class BBSGrooveWindow(QMainWindow):
         btn_save.setStyleSheet(BTN_STYLE)
         def _mk_plus():
             from PyQt6.QtGui import QIcon,QPixmap,QPainter,QColor,QPen
-            from PyQt6.QtCore import QSize
             px=QPixmap(18,18);px.fill(QColor(0,0,0,0))
             p=QPainter(px);p.setRenderHint(QPainter.RenderHint.Antialiasing)
             p.setPen(QPen(QColor('#ffffff'),3))
@@ -1172,7 +1171,6 @@ class BBSGrooveWindow(QMainWindow):
             tracks = self._playlist_store.get_tracks(name)
             item = QListWidgetItem()
             item.setData(Qt.ItemDataRole.UserRole, name)
-            from PyQt6.QtCore import QSize
             item.setSizeHint(QSize(0, 44))
             self._pl_list.addItem(item)
             row = QWidget()
