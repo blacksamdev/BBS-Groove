@@ -193,6 +193,8 @@ class BBSGrooveWindow(QMainWindow):
         btn_save.setFixedSize(44, 32)
         btn_save.setStyleSheet(BTN_STYLE)
         def _mk_plus():
+            from PyQt6.QtGui import QIcon,QPixmap,QPainter,QColor,QPen
+            from PyQt6.QtCore import QSize
             px=QPixmap(18,18);px.fill(QColor(0,0,0,0))
             p=QPainter(px);p.setRenderHint(QPainter.RenderHint.Antialiasing)
             p.setPen(QPen(QColor('#ffffff'),3))
