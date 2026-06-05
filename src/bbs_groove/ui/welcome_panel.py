@@ -115,7 +115,7 @@ class WelcomePanel(QWidget):
             ('🔍', 'Rechercher', self._on_load),
         ]:
             btn = QPushButton(f'  {label}')
-            if callable(ico):
+            if hasattr(ico, 'pixmap'):
                 btn.setIcon(ico);btn.setIconSize(QSize(16,16))
             elif ico:
                 btn.setText(f'{ico}  {label}')
