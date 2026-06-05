@@ -93,14 +93,32 @@ class WelcomePanel(QWidget):
         v.addWidget(self._input)
 
         # Boutons principaux — une seule ligne
+        from PyQt6.QtGui import QIcon,QPixmap,QPainter,QPolygon,QColor,QPen
+        from PyQt6.QtCore import QPoint,QSize
+        def _ico_play():
+            px=QPixmap(16,16);px.fill(QColor(0,0,0,0))
+            p=QPainter(px);p.setRenderHint(QPainter.RenderHint.Antialiasing)
+            p.setPen(QPen(QColor(TXT),2));p.setBrush(QColor(TXT))
+            p.drawPolygon(QPolygon([QPoint(2,1),QPoint(2,15),QPoint(15,8)]))
+            p.end();return QIcon(px)
+        def _ico_plus():
+            px=QPixmap(16,16);px.fill(QColor(0,0,0,0))
+            p=QPainter(px);p.setRenderHint(QPainter.RenderHint.Antialiasing)
+            p.setPen(QPen(QColor(TXT),3))
+            p.drawLine(8,2,8,14);p.drawLine(2,8,14,8)
+            p.end();return QIcon(px)
         row_btns = QHBoxLayout()
         row_btns.setSpacing(8)
-        for icon, label, slot in [
+        for ico, label, slot in [
             ('▶️', 'Charger',    self._on_load),
             ('🗂️', 'Importer',   self._on_import),
             ('🔍', 'Rechercher', self._on_load),
         ]:
-            btn = QPushButton(f'{icon}  {label}')
+            btn = QPushButton(f'  {label}')
+            if callable(ico):
+                btn.setIcon(ico);btn.setIconSize(QSize(16,16))
+            elif ico:
+                btn.setText(f'{ico}  {label}')
             btn.setStyleSheet(CARD_STYLE)
             btn.setCursor(Qt.CursorShape.PointingHandCursor)
             btn.clicked.connect(slot)
