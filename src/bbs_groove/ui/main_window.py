@@ -159,16 +159,30 @@ class BBSGrooveWindow(QMainWindow):
 
 
     def _topbar(self) -> QWidget:
+        from PyQt6.QtGui import QIcon,QPixmap,QPainter,QPolygon,QColor,QPen
+        from PyQt6.QtCore import QPoint,QSize
+        def _icon_play():
+            px=QPixmap(18,18); px.fill(QColor(0,0,0,0))
+            p=QPainter(px); p.setRenderHint(QPainter.RenderHint.Antialiasing)
+            p.setPen(QPen(QColor('#ffffff'),2)); p.setBrush(QColor('#ffffff'))
+            p.drawPolygon(QPolygon([QPoint(3,1),QPoint(3,17),QPoint(17,9)]))
+            p.end(); return QIcon(px)
+        def _icon_plus():
+            px=QPixmap(18,18); px.fill(QColor(0,0,0,0))
+            p=QPainter(px); p.setRenderHint(QPainter.RenderHint.Antialiasing)
+            p.setPen(QPen(QColor('#ffffff'),3))
+            p.drawLine(9,2,9,16); p.drawLine(2,9,16,9)
+            p.end(); return QIcon(px)
         w = QWidget()
         w.setStyleSheet(f'background: {BG_PANEL}; border-bottom: 1px solid #222;')
         w.setFixedHeight(44)
         h = QHBoxLayout(w)
-        h.setContentsMargins(16, 8, 16, 8)
-        h.setSpacing(10)
+        h.setContentsMargins(16, 6, 16, 6)
+        h.setSpacing(8)
         logo = QLabel('BBS gr<span style="color:#1DB954">OO</span>ve')
         logo.setTextFormat(Qt.TextFormat.RichText)
         logo.setStyleSheet(f'font-size: 16px; font-weight: bold; color: {TEXT_PRI}; background: transparent;')
-        logo.setFixedWidth(140)
+        logo.setFixedWidth(130)
         h.addWidget(logo)
         self._url_input = QLineEdit()
         self._url_input.setPlaceholderText('URL Spotify / Deezer  ou  recherche (artiste, titre, album)…')
@@ -182,29 +196,22 @@ class BBSGrooveWindow(QMainWindow):
         """)
         self._url_input.returnPressed.connect(self._load_url)
         h.addWidget(self._url_input)
-        btn_load = QPushButton('▶️')
+        btn_load = QPushButton()
         btn_load.setFixedSize(44, 32)
         btn_load.setToolTip('Charger')
         btn_load.setStyleSheet(BTN_STYLE)
-        btn_load.setIcon(_mk_play());btn_load.setIconSize(_QS(18,18))
-        btn_load.setToolTip('Charger')
+        btn_load.setIcon(_icon_play())
+        btn_load.setIconSize(QSize(18, 18))
         btn_load.clicked.connect(self._load_url)
         h.addWidget(btn_load)
-
         btn_save = QPushButton()
-        btn_save.setToolTip('Importer une playlist')
         btn_save.setFixedSize(44, 32)
+        btn_save.setToolTip('Importer une playlist')
         btn_save.setStyleSheet(BTN_STYLE)
-        def _mk_plus():
-            from PyQt6.QtGui import QIcon,QPixmap,QPainter,QColor,QPen
-            px=QPixmap(18,18);px.fill(QColor(0,0,0,0))
-            p=QPainter(px);p.setRenderHint(QPainter.RenderHint.Antialiasing)
-            p.setPen(QPen(QColor('#ffffff'),3))
-            p.drawLine(9,2,9,16);p.drawLine(2,9,16,9);p.end();return QIcon(px)
-        btn_save.setIcon(_mk_plus());btn_save.setIconSize(_QS(18,18))
+        btn_save.setIcon(_icon_plus())
+        btn_save.setIconSize(QSize(18, 18))
         btn_save.clicked.connect(self._save_as_playlist)
         h.addWidget(btn_save)
-
         self._btn_opts = QPushButton('⚙  ▼')
         btn_opts = self._btn_opts
         btn_opts.setToolTip('Options')
