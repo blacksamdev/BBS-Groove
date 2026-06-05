@@ -110,8 +110,8 @@ class WelcomePanel(QWidget):
         row_btns = QHBoxLayout()
         row_btns.setSpacing(8)
         for ico, label, slot in [
-            ('▶️', 'Charger',    self._on_load),
-            ('🗂️', 'Importer',   self._on_import),
+            (_ico_play(), 'Charger',    self._on_load),
+            (_ico_plus(), 'Importer',   self._on_import),
             ('🔍', 'Rechercher', self._on_load),
         ]:
             btn = QPushButton(f'  {label}')
