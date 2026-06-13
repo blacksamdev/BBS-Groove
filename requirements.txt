@@ -2,4 +2,4 @@ PyQt6>=6.4.0
 spotifyscraper>=1.0.0
 yt-dlp>=2024.1.0
 python-dotenv>=1.0.0
-requests>=2.31.0
+requests>=2.33.0
