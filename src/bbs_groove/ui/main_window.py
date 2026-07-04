@@ -2,7 +2,7 @@ from bbs_groove.logging_utils import log
 import io
 import subprocess
 import threading
-from PyQt6.QtCore import Qt, QTimer, pyqtSignal, QObject
+from PyQt6.QtCore import Qt, QTimer, pyqtSignal, QObject, QSize
 from PyQt6.QtGui import QPixmap, QFont, QColor, QPalette
 from PyQt6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
