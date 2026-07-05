@@ -3,3 +3,7 @@ spotifyscraper>=1.0.0
 yt-dlp>=2024.1.0
 python-dotenv>=1.0.0
 requests>=2.33.0
+urllib3>=2.5.0
+lxml>=6.1.0
+zipp>=3.19.1
+idna>=3.15
