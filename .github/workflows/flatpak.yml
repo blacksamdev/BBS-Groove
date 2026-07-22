@@ -50,7 +50,7 @@ jobs:
         run: |
           set -e
           pip3 install flatpak-pip-generator
-          python3 -m flatpak_pip_generator --runtime org.kde.Sdk//6.9 pybind11 spotifyscraper yt-dlp python-dotenv requests -o python-deps
+          python3 -m flatpak_pip_generator --runtime org.kde.Sdk//6.9 --requirements-file requirements-flatpak.txt -o python-deps
           python3 scripts/patch_deps.py
 
       - name: Import GPG key
