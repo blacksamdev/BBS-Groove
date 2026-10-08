@@ -35,8 +35,8 @@ jobs:
       - name: Install SDK
         run: |
           set -e
-          flatpak install --user -y flathub org.kde.Sdk//6.9
-          flatpak install --user -y flathub org.kde.Platform//6.9
+          flatpak install --user -y flathub org.kde.Sdk//6.11
+          flatpak install --user -y flathub org.kde.Platform//6.11
 
       - name: Download PyQt6 wheels
         run: |
@@ -50,7 +50,7 @@ jobs:
         run: |
           set -e
           pip3 install flatpak-pip-generator
-          python3 -m flatpak_pip_generator --runtime org.kde.Sdk//6.9 --requirements-file requirements-flatpak.txt -o python-deps
+          python3 -m flatpak_pip_generator --runtime org.kde.Sdk//6.11 --requirements-file requirements-flatpak.txt -o python-deps
           python3 scripts/patch_deps.py
 
       - name: Import GPG key

@@ -1,7 +1,7 @@
 {
   "app-id": "io.github.blacksamdev.Groove",
   "runtime": "org.kde.Platform",
-  "runtime-version": "6.9",
+  "runtime-version": "6.11",
   "sdk": "org.kde.Sdk",
   "command": "bbs-groove",
   "finish-args": [
