@@ -42,7 +42,13 @@ jobs:
         run: |
           set -e
           mkdir -p pyqt6-wheels
-          pip3 download --no-deps --only-binary=:all: -d pyqt6-wheels/ PyQt6 PyQt6-Qt6 PyQt6-sip
+          # PyQt6 (abi3) et PyQt6-Qt6 (py3) sont universels
+          pip3 download --no-deps --only-binary=:all: -d pyqt6-wheels/ PyQt6 PyQt6-Qt6
+          # PyQt6-sip est specifique a l'interpreteur : cibler le Python du SDK KDE 6.11 (cp313)
+          pip3 download --no-deps --only-binary=:all: \
+            --python-version 3.13 --implementation cp --abi cp313 \
+            --platform manylinux1_x86_64 --platform manylinux_2_5_x86_64 \
+            -d pyqt6-wheels/ PyQt6-sip
           ls pyqt6-wheels/
           python3 scripts/gen_pyqt6.py
 
