@@ -17,7 +17,11 @@ import pathlib as _pl
 MPV_SOCKET = str(_pl.Path.home() / '.var' / 'app' / 'io.mpv.Mpv' / 'bbs-groove-mpv.sock')
 
 MPV_ARGS = [
+    # Forcer le mode lecteur (cplayer). Lancé sans terminal, mpv bascule sinon
+    # en pseudo-gui et ouvre une fenêtre vidéo, meme avec --no-video.
+    '--player-operation-mode=cplayer',
     '--no-video',
+    '--force-window=no',
     '--no-terminal',
     '--really-quiet',
     '--audio-display=no',
