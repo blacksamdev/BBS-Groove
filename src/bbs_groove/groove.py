@@ -19,6 +19,11 @@ def main():
     from PyQt6.QtWidgets import QApplication
     app = QApplication(sys.argv)
     app.setApplicationName('BBS Groove')
+    # App-id Wayland/X11 déterministe : la fenetre Groove s'annonce comme
+    # io.github.blacksamdev.Groove (et non 'python3'), pour que la fenetre mpv,
+    # lancee avec le meme app-id (cf. settings.MPV_ARGS), se groupe sous l'icone
+    # Groove dans la barre des taches au lieu d'une entree 'mpv' separee.
+    app.setDesktopFileName('io.github.blacksamdev.Groove')
     app.setStyle('Fusion')
     if args.gaming:
         from bbs_groove.ui.tray import GrooveTray
