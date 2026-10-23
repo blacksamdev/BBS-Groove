@@ -14,7 +14,12 @@ _IS_FLATPAK = os.path.exists('/app')
 
 def _mpv_cmd() -> list[str]:
     if _IS_FLATPAK:
-        return ['flatpak-spawn', '--host', 'flatpak', 'run', 'io.mpv.Mpv']
+        # --command=mpv lance le binaire mpv directement, sans passer par la
+        # commande par defaut du .desktop io.mpv.Mpv. Sans ca, `flatpak run
+        # io.mpv.Mpv` declenche (via D-Bus/activation, lignee systemd --user)
+        # une 2e instance mpv en pseudo-gui : une fenetre "No file - mpv" qui
+        # s'affiche dans la barre des taches EN PLUS de notre lecture audio.
+        return ['flatpak-spawn', '--host', 'flatpak', 'run', '--command=mpv', 'io.mpv.Mpv']
     if shutil.which('mpv'):
         return ['mpv']
     raise FileNotFoundError("mpv introuvable.\n  flatpak install flathub io.mpv.Mpv")
