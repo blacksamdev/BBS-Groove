@@ -16,20 +16,11 @@ _IS_FLATPAK = os.path.exists('/app')
 import pathlib as _pl
 MPV_SOCKET = str(_pl.Path.home() / '.var' / 'app' / 'io.mpv.Mpv' / 'bbs-groove-mpv.sock')
 
-# Arguments mpv — lecteur AUDIO sans aucune fenetre.
-# player.py lance mpv UNE fois en --idle (ajoute --idle=yes) puis charge les
-# titres via loadfile sur le socket IPC : aucune URL n'est passee a
-# `flatpak run`, donc pas de fenetre pseudo-gui parasite.
-# NE PAS ajouter --wayland-app-id / --x11-name / --player-operation-mode :
-# ces options forcent mpv a creer une surface graphique (fenetre + entree
-# dans la barre des taches), meme en --no-video. La config ci-dessous ne
-# cree aucune fenetre.
 MPV_ARGS = [
     '--no-video',
-    '--force-window=no',
-    '--audio-display=no',
     '--no-terminal',
     '--really-quiet',
+    '--audio-display=no',
     f'--input-ipc-server={MPV_SOCKET}',
 ]
 
