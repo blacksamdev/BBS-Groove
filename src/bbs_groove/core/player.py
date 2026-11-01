@@ -13,27 +13,48 @@ from bbs_groove.logging_utils import log
 _IS_FLATPAK = os.path.exists('/app')
 
 
+def _host_has_native_mpv() -> bool:
+    """True si un mpv NATIF est installé sur l'hôte (hors Flatpak)."""
+    try:
+        r = subprocess.run(
+            ['flatpak-spawn', '--host', 'sh', '-c', 'command -v mpv'],
+            capture_output=True, timeout=5,
+        )
+        return r.returncode == 0 and bool(r.stdout.strip())
+    except Exception:
+        return False
+
+
 def _mpv_cmd() -> list[str]:
     if _IS_FLATPAK:
-        # --command=mpv lance le binaire mpv directement (pas la commande du
-        # .desktop io.mpv.Mpv).
+        # Préférer un mpv NATIF sur l'hôte. Raison : lancé via
+        # `flatpak run io.mpv.Mpv`, mpv obtient TOUJOURS une entrée dans la
+        # barre des taches (KDE traite l'app Flatpak comme une appli GUI),
+        # impossible a supprimer par le moindre flag mpv (--no-video, --vo=null,
+        # --force-window=no, --idle... testés : l'icone reste). Un mpv natif,
+        # lui, ne cree aucune fenetre en lecture audio. Repli sur le Flatpak
+        # mpv si aucun mpv natif n'est present (l'icone revient alors, mais la
+        # lecture fonctionne).
+        if _host_has_native_mpv():
+            return ['flatpak-spawn', '--host', 'mpv']
         return ['flatpak-spawn', '--host', 'flatpak', 'run', '--command=mpv', 'io.mpv.Mpv']
     if shutil.which('mpv'):
         return ['mpv']
-    raise FileNotFoundError("mpv introuvable.\n  flatpak install flathub io.mpv.Mpv")
+    raise FileNotFoundError(
+        "mpv introuvable.\n  sudo apt install mpv   (recommandé)\n"
+        "  ou  flatpak install flathub io.mpv.Mpv"
+    )
 
 
 class MPVPlayer:
     """Contrôle mpv via une instance IDLE persistante + socket IPC.
 
     mpv est lancé UNE SEULE fois en --idle (sans URL) ; chaque titre est
-    ensuite chargé via `loadfile` sur le socket IPC. C'est volontaire :
-    passer l'URL en argument à `flatpak run io.mpv.Mpv <url>` declenchait
-    l'activation du .desktop mpv (via D-Bus/systemd --user), ouvrant une 2e
-    instance mpv en pseudo-gui — la fameuse fenetre "No file - mpv" dans la
-    barre des taches. En mode idle + IPC, aucune URL n'est jamais passee a
-    `flatpak run`, donc plus aucune fenetre parasite. Bonus : l'instance est
-    reutilisee d'un titre a l'autre (plus fluide, plus de kill/relance).
+    ensuite chargé via `loadfile` sur le socket IPC. Passer l'URL en argument
+    a `flatpak run io.mpv.Mpv <url>` declenchait l'activation du .desktop mpv
+    (fenetre pseudo-gui) ; en idle + IPC, aucune URL n'est jamais passee a
+    `flatpak run`. De plus _mpv_cmd() prefere un mpv natif, qui ne cree aucune
+    entree dans la barre des taches.
 
     Fin de titre : detectee via l'event mpv `end-file` (reason == "eof").
     """
@@ -125,6 +146,12 @@ class MPVPlayer:
             try:
                 if os.path.exists(self.socket_path):
                     os.remove(self.socket_path)
+            except Exception:
+                pass
+            # s'assurer que le dossier du socket existe (pour un mpv natif qui
+            # n'a pas forcement cree ~/.var/app/io.mpv.Mpv/)
+            try:
+                os.makedirs(os.path.dirname(self.socket_path), exist_ok=True)
             except Exception:
                 pass
             cmd = _mpv_cmd() + MPV_ARGS + ['--idle=yes']
