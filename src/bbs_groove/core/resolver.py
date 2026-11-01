@@ -5,7 +5,7 @@ import yt_dlp
 class Resolver:
     """Résout un dict track (titre + artiste) en URL audio YouTube.
 
-    resolve()            → URL directe (meilleur match durée)
+    resolve()            → URL du flux audio DIRECT (meilleur match durée)
     resolve_candidates() → liste des 5 résultats avec métadonnées
     """
 
@@ -26,12 +26,29 @@ class Resolver:
     _DURATION_THRESHOLD = 0.15  # 15% d'écart max
 
     def resolve(self, track: dict) -> str | None:
-        """Retourne l'URL du meilleur candidat selon la durée Spotify."""
+        """Retourne l'URL du flux audio DIRECT du meilleur candidat.
+
+        On résout le flux audio direct (googlevideo) avec NOTRE yt-dlp, au
+        lieu de passer une page youtube.com/watch a mpv : le yt-dlp embarque
+        dans le Flatpak mpv est souvent trop ancien et genere des URLs
+        rejetees par YouTube (HTTP 403 Forbidden), ce qui faisait echouer
+        une partie des titres. En resolvant nous-memes, tous les titres
+        passent par le meme yt-dlp (a jour).
+        """
         candidates = self.resolve_candidates(track)
         if not candidates:
             return None
-        # Prend le premier (déjà trié par score durée)
-        return candidates[0]['url']
+        best = candidates[0]
+        # Page YouTube du meilleur candidat (webpage_url, sinon l'url flat)
+        page = best.get('webpage_url') or best.get('url') or ''
+        if page:
+            direct = self.resolve_from_url(page)
+            if direct:
+                return direct
+            log(f"Resolver: flux direct indisponible pour {best.get('title', '')}, "
+                f"repli sur la page YouTube", "warning")
+        # Repli : l'URL telle quelle (mpv tentera de la resoudre lui-meme)
+        return best.get('url')
 
     def resolve_candidates(self, track: dict) -> list[dict]:
         """Retourne jusqu'à 5 candidats triés par proximité de durée.
@@ -82,7 +99,7 @@ class Resolver:
         return []
 
     def resolve_from_url(self, yt_url: str) -> str | None:
-        """Résout une URL YouTube (pérenne) en URL streaming fraîche."""
+        """Résout une URL/page YouTube en URL de flux audio direct (fraiche)."""
         try:
             with yt_dlp.YoutubeDL(self._YDL_OPTS) as ydl:
                 info = ydl.extract_info(yt_url, download=False)
@@ -96,6 +113,9 @@ class Resolver:
     def _extract_url(entry: dict) -> str | None:
         if not entry:
             return None
+        # En mode bestaudio (resolve_from_url), yt-dlp place l'URL du format
+        # choisi dans entry['url'] : on la prend en priorité. En mode flat
+        # (resolve_candidates), entry['url'] est la page youtube.com/watch.
         if 'url' in entry:
             return entry['url']
         formats = entry.get('formats', [])
